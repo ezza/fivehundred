@@ -2,6 +2,7 @@ class CreateCards < ActiveRecord::Migration
   def change
     create_table :cards do |t|
       t.references :hand
+      t.references :game
       t.string :rank
       t.string :suit
 

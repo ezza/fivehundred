@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170507062532) do
 
   create_table "cards", force: :cascade do |t|
     t.integer  "hand_id"
+    t.integer  "game_id"
     t.string   "rank"
     t.string   "suit"
     t.datetime "created_at", null: false
@@ -28,6 +29,7 @@ ActiveRecord::Schema.define(version: 20170507062532) do
 
   create_table "hands", force: :cascade do |t|
     t.integer  "game_id"
+    t.integer  "bid_order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

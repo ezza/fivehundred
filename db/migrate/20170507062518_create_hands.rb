@@ -3,6 +3,8 @@ class CreateHands < ActiveRecord::Migration
     create_table :hands do |t|
       t.references :game
 
+      t.integer :bid_order
+
       t.timestamps null: false
     end
   end

@@ -1,5 +1,6 @@
 class Card < ActiveRecord::Base
   belongs_to :hand
+  belongs_to :game
 
   def value
     case rank
