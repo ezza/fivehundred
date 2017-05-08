@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Hand, type: :model do
   before do
     @game = Game.create
-    @hand = @game.hands.create
+    @hand = @game.hands.create(bid_order: 1)
   end
 
   describe "Hearts hand" do
@@ -103,7 +103,7 @@ RSpec.describe Hand, type: :model do
 
   describe "following a bid of 6 hearts" do
     before do
-      @hand_two = @game.hands.create!
+      @hand_two = @game.hands.create!(bid_order: 2)
       @hand_two.bids.create(suit: 'Hearts', tricks: 6)
     end
 
@@ -118,6 +118,20 @@ RSpec.describe Hand, type: :model do
         @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
       ).to eq({
         suit: 'Spades', tricks: 7
+      })
+    end
+
+    it "passes with a red hand" do
+      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
+      @hand.cards.create(rank: 'Ace', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Pass', tricks: 0
       })
     end
   end
