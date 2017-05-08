@@ -3,6 +3,7 @@ class Hand < ActiveRecord::Base
   has_many :cards
   has_many :bids
 
+
   def make_bid
     strongest = strongest_suit
     strength = strength(strongest_suit)
@@ -18,6 +19,12 @@ class Hand < ActiveRecord::Base
     end
 
     bid.save
+  end
+
+  def choose_kitty
+    
+    
+    # Remove each card in turn, discard the lowest value card that has the lowest score decrease
   end
 
   def highest_bid
@@ -59,19 +66,19 @@ class Hand < ActiveRecord::Base
     bower_count(suit) +
     non_bower_count(suit).to_f/2 +
     non_trump_ace_count(suit) +
-    cards.where(rank: 'Joker').count
+    cards.where(rank: 'Joker').size
   end
 
   def non_bower_count(suit)
-    cards.where(suit: suit).where.not(rank: 'Jack').count
+    cards.where(suit: suit).where.not(rank: 'Jack').size
   end
 
   def bower_count(suit)
     left_suit = Deck.match(suit)
-    cards.where(rank: 'Jack').where("suit = ? or suit = ?", suit, left_suit).count
+    cards.where(rank: 'Jack').where("suit = ? or suit = ?", suit, left_suit).size
   end
 
   def non_trump_ace_count(suit)
-    cards.where(rank: 'Ace').where.not(suit: suit).count
+    cards.where(rank: 'Ace').where.not(suit: suit).size
   end
 end

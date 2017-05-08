@@ -2,6 +2,14 @@ class Card < ActiveRecord::Base
   belongs_to :hand
   belongs_to :game
 
+  def self.unassigned
+    where(hand: nil)
+  end
+
+  def strength(suit)
+    
+  end
+
   def value
     case rank
     when 'Ace'
