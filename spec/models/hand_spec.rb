@@ -112,6 +112,7 @@ RSpec.describe Hand, type: :model do
       @hand.cards.create(rank: 'Ace', suit: "Spades")
       @hand.cards.create(rank: 10, suit: "Spades")
       @hand.cards.create(rank: 9, suit: "Spades")
+      @hand.cards.create(rank: 'Ace', suit: "Diamonds")
       @hand.make_bid
 
       expect(
@@ -134,5 +135,78 @@ RSpec.describe Hand, type: :model do
         suit: 'Pass', tricks: 0
       })
     end
+
+    it "bids the colour not bid by the opponents" do
+      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
+      @hand.cards.create(rank: 'Ace', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+      @hand.cards.create(rank: 8, suit: "Hearts")
+      @hand.cards.create(rank: 'Jack', suit: "Clubs")
+      @hand.cards.create(rank: 'Ace', suit: "Spades")
+      @hand.cards.create(rank: 10, suit: "Spades")
+      @hand.cards.create(rank: 9, suit: "Spades")
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Spades', tricks: 7
+      })
+    end
+
+    describe "with a partner bid of 6 clubs" do
+      before do
+        @hand.bids.create(suit: 'Clubs', tricks: 6)
+        @hand_two = @game.hands.create!(bid_order: 2)
+        @hand_two.bids.create(suit: 'Hearts', tricks: 6)
+        @hand_three = @game.hands.create!(bid_order: 3)
+      end
+
+      it "bids 7 with a black hand" do
+        @hand_three.cards.create(rank: 'Jack', suit: "Clubs")
+        @hand_three.cards.create(rank: 'Ace', suit: "Spades")
+        @hand_three.cards.create(rank: 10, suit: "Spades")
+        @hand_three.cards.create(rank: 9, suit: "Spades")
+        @hand_three.make_bid
+
+        expect(
+          @hand_three.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+        ).to eq({
+          suit: 'Clubs', tricks: 7
+        })
+      end
+
+      it "passes with a red hand" do
+        @hand_three.cards.create(rank: 'Jack', suit: "Diamonds")
+        @hand_three.cards.create(rank: 'Ace', suit: "Hearts")
+        @hand_three.cards.create(rank: 10, suit: "Hearts")
+        @hand_three.cards.create(rank: 9, suit: "Hearts")
+        @hand_three.make_bid
+
+        expect(
+          @hand_three.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+        ).to eq({
+          suit: 'Pass', tricks: 0
+        })
+      end
+
+      it "changes to the partners suit" do
+        @hand_three.cards.create(rank: 9, suit: "Clubs")
+        @hand_three.cards.create(rank: 8, suit: "Clubs")
+        @hand_three.cards.create(rank: 'Jack', suit: "Clubs")
+        @hand_three.cards.create(rank: 'Queen', suit: "Spades")
+        @hand_three.cards.create(rank: 10, suit: "Spades")
+        @hand_three.cards.create(rank: 9, suit: "Spades")
+        @hand_three.make_bid
+
+        expect(
+          @hand_three.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+        ).to eq({
+          suit: 'Clubs', tricks: 7
+        })
+      end
+    end
   end
+
 end

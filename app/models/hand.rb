@@ -4,16 +4,19 @@ class Hand < ActiveRecord::Base
   has_many :bids
 
   def make_bid
-    tricks = 6
     strongest = strongest_suit
     strength = strength(strongest_suit)
 
-    unless strength > 2
-      return bids.create!(suit: 'Pass', tricks: 0)
+    bid = bids.new(suit: strongest, tricks: 6)
+    while bid.score <= highest_bid.try(:score).to_i
+      bid.tricks += 1
+      strength -= 0.5
     end
 
-    bid = bids.new(suit: strongest, tricks: tricks)
-    bid.tricks += 1 if bid.score <= highest_bid.try(:score).to_i
+    unless strength > 2
+      bid.suit, bid.tricks = 'Pass', 0
+    end
+
     bid.save
   end
 
@@ -44,10 +47,10 @@ class Hand < ActiveRecord::Base
   def strength(suit)
     score = internal_strength(suit)
 
-    score += 1.5 if highest_partner_bid.try(:suit) == suit
-    score += 1.0 if highest_partner_bid.try(:suit) == Deck.match(suit)
-    score -= 1.5 if highest_opponent_bid.try(:suit) == suit
-    score -= 1.0 if highest_opponent_bid.try(:suit) == Deck.match(suit)
+    score += 1.3 if highest_partner_bid.try(:suit) == suit
+    score += 0.3 if highest_partner_bid.try(:suit) == Deck.match(suit)
+    score -= 1.3 if highest_opponent_bid.try(:suit) == suit
+    score -= 0.3 if highest_opponent_bid.try(:suit) == Deck.match(suit)
 
     score
   end
