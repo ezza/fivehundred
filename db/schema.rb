@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170507080909) do
 
   create_table "bids", force: :cascade do |t|
     t.integer  "hand_id"
+    t.integer  "game_id"
     t.string   "suit"
     t.integer  "tricks"
     t.boolean  "won"

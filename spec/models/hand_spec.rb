@@ -2,12 +2,13 @@ require 'rails_helper'
 
 RSpec.describe Hand, type: :model do
   before do
-    @hand = Hand.create
+    @game = Game.create
+    @hand = @game.hands.create
   end
 
   describe "Hearts hand" do
     before do
-      @hand.cards.create(rank: 'Jack', suit: "Hearts")
+      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
       @hand.cards.create(rank: 'Ace', suit: "Hearts")
       @hand.cards.create(rank: 10, suit: "Hearts")
       @hand.cards.create(rank: 9, suit: "Hearts")
@@ -32,18 +33,92 @@ RSpec.describe Hand, type: :model do
       end
     end
 
-    describe "bid" do
-      it "creates a bid of six hearts" do
-        @hand.make_bid
-
-        expect(
-          @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
-        ).to eq({
-          suit: 'Hearts', tricks: 6
-        })
-      end
+    describe "bowers" do
     end
   end
 
 
+  describe "first bid" do
+    it "bids with four trumps including bower" do
+      @hand.cards.create(rank: 'Jack', suit: "Hearts")
+      @hand.cards.create(rank: 'Ace', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Hearts', tricks: 6
+      })
+    end
+
+    it "bids with three trumps and the left bower" do
+      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
+      @hand.cards.create(rank: 'Ace', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Hearts', tricks: 6
+      })
+    end
+
+    it "bids with five trumps and no bower" do
+      @hand.cards.create(rank: 'Ace', suit: "Hearts")
+      @hand.cards.create(rank: 'Queen', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+      @hand.cards.create(rank: 4, suit: "Hearts")
+
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Hearts', tricks: 6
+      })
+    end
+
+    it "passes with four trumps and no bower" do
+      @hand.cards.create(rank: 'Queen', suit: "Hearts")
+      @hand.cards.create(rank: 10, suit: "Hearts")
+      @hand.cards.create(rank: 9, suit: "Hearts")
+      @hand.cards.create(rank: 4, suit: "Hearts")
+
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Pass', tricks: 0
+      })
+    end
+  end
+
+  describe "following a bid of 6 hearts" do
+    before do
+      @hand_two = @game.hands.create!
+      @hand_two.bids.create(suit: 'Hearts', tricks: 6)
+    end
+
+    it "bids 7 with a black hand" do
+      @hand.cards.create(rank: 'Jack', suit: "Clubs")
+      @hand.cards.create(rank: 'Ace', suit: "Spades")
+      @hand.cards.create(rank: 10, suit: "Spades")
+      @hand.cards.create(rank: 9, suit: "Spades")
+      @hand.make_bid
+
+      expect(
+        @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+      ).to eq({
+        suit: 'Spades', tricks: 7
+      })
+    end
+  end
 end

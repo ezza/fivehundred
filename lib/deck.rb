@@ -19,4 +19,30 @@ class Deck
     ).flatten
   end
 
+  def self.match(suit)
+    case suit
+    when 'Hearts'
+      'Diamonds'
+    when 'Diamonds'
+      'Hearts'
+    when 'Clubs'
+      'Spades'
+    when 'Spades'
+      'Clubs'
+    end
+  end
+
+  def self.value(suit)
+    case suit
+    when 'Hearts'
+      100
+    when 'Diamonds'
+      80
+    when 'Clubs'
+      60
+    when 'Spades'
+      40
+    end
+  end
+
 end

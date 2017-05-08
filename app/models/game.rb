@@ -1,5 +1,6 @@
 class Game < ActiveRecord::Base
   has_many :hands
+  has_many :bids
   has_many :cards
   has_one :kitty
 
