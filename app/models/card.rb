@@ -6,8 +6,12 @@ class Card < ActiveRecord::Base
     where(hand: nil)
   end
 
-  def strength(suit)
-    
+  def strength(trump_suit)
+    value + if suit == trump_suit
+      15
+    else
+      Deck.value(suit).to_f / 200
+    end
   end
 
   def value
@@ -21,7 +25,7 @@ class Card < ActiveRecord::Base
     when 'Jack'
       11
     else
-      rank
+      rank.to_i
     end
   end
 

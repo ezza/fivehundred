@@ -209,4 +209,29 @@ RSpec.describe Hand, type: :model do
     end
   end
 
+  describe "discarding kitty" do
+    before do
+      @s6  = @hand.cards.create(rank: 6, suit: "Spades")
+      @h10 = @hand.cards.create(rank: 10, suit: "Hearts")
+      @h9  = @hand.cards.create(rank: 9, suit: "Hearts")
+      @h8  = @hand.cards.create(rank: 8, suit: "Hearts")
+    end
+
+    it "discards the lowest three cards" do
+      @game.update_attributes(trump_suit: 'Diamonds')
+
+      @hand.choose_kitty
+
+      expect(@hand.cards.reload).to eq([@h10])
+    end
+
+    it "does not discard trumps" do
+      @game.update_attributes(trump_suit: 'Spades')
+
+      @hand.choose_kitty
+
+      expect(@hand.cards.reload).to eq([@s6])
+    end
+  end
+
 end

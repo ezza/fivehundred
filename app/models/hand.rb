@@ -22,9 +22,10 @@ class Hand < ActiveRecord::Base
   end
 
   def choose_kitty
-    
-    
-    # Remove each card in turn, discard the lowest value card that has the lowest score decrease
+    sorted = cards.sort_by{ |c| c.strength(game.trump_suit) }
+    sorted.first(3).each do |card|
+      card.update_attributes!(hand: nil)
+    end
   end
 
   def highest_bid

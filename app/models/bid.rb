@@ -2,7 +2,7 @@ class Bid < ActiveRecord::Base
   belongs_to :hand
   belongs_to :game
   before_create :set_game
-  after_create :check_game_status
+#  after_create :check_game_status
 
   def self.active
     where.not(suit: 'Pass')

@@ -33,6 +33,9 @@ ActiveRecord::Schema.define(version: 20170507080909) do
   end
 
   create_table "games", force: :cascade do |t|
+    t.string   "trump_suit"
+    t.integer  "tricks_bid"
+    t.integer  "tricks_won"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
