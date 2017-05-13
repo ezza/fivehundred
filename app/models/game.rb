@@ -33,7 +33,7 @@ class Game < ActiveRecord::Base
       card.update_attributes(hand: winning_bid.hand)
     end
 
-    cards.trump(trump_suit).update_all(is_trump: true)
+    cards.trumps_when(trump_suit).update_all(is_trump: true)
 
     winning_bid.hand.choose_kitty
   end

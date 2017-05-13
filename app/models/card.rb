@@ -15,7 +15,15 @@ class Card < ActiveRecord::Base
     where(trick: nil).where.not(hand: nil)
   end
 
-  def self.trump(suit)
+  def self.trump
+    where(is_trump: true)
+  end
+
+  def self.non_trump
+    where(is_trump: false)
+  end
+
+  def self.trumps_when(suit)
     where("suit = ? or (suit = ? and rank = ?) or rank = ?", suit, Deck.match(suit), 'Jack', 'Joker')
   end
 

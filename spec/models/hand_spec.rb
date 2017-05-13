@@ -238,16 +238,16 @@ RSpec.describe Hand, type: :model do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
 
-      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds")
+      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
 
       @s4  = @hand.cards.create(game: @game, rank: "4", suit: "Spades")
-      @h9  = @hand.cards.create(game: @game, rank: 10, suit: "Hearts")
-      @h8  = @hand.cards.create(game: @game, rank: 8, suit: "Hearts")
+      @h9  = @hand.cards.create(game: @game, rank: 10, suit: "Hearts", is_trump: true)
+      @h8  = @hand.cards.create(game: @game, rank: 8, suit: "Hearts", is_trump: true)
       @ca  = @hand.cards.create(game: @game, rank: "Ace", suit: "Clubs")
     end
 
     it "leads the highest trump if it has it" do
-      @jk = @hand.cards.create(game: @game, rank: "Joker", suit: nil)
+      @jk = @hand.cards.create(game: @game, rank: "Joker", suit: nil, is_trump: true)
 
       @hand.lead
       expect(Trick.last.cards[0]).to eq(@jk)
@@ -270,7 +270,7 @@ RSpec.describe Hand, type: :model do
       @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Ace", suit: "Spades")
       @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Ace", suit: "Clubs")
 
-      @h8.update_attributes(suit: "Clubs")
+      @h8.update_attributes(suit: "Clubs", is_trump: false)
       @ca.update_attributes(rank: "Queen")
 
       @hand.lead
