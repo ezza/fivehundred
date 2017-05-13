@@ -2,7 +2,9 @@ class Hand < ActiveRecord::Base
   belongs_to :game
   has_many :cards
   has_many :bids
+  has_many :won_tricks, foreign_key: :won_by_hand_id
 
+  delegate :trump_suit, to: :game
 
   def make_bid
     strongest = strongest_suit
@@ -22,10 +24,39 @@ class Hand < ActiveRecord::Base
   end
 
   def choose_kitty
-    sorted = cards.sort_by{ |c| c.strength(game.trump_suit) }
-    sorted.first(3).each do |card|
+    cards.by_strength(trump_suit).last(3).each do |card|
       card.update_attributes!(hand: nil)
     end
+  end
+
+  def lead
+    if highest_trump == game.cards.in_play.by_strength(trump_suit).first
+      highest_trump
+    elsif trump_count > 1
+      trump_cards.in_play.by_strength(trump_suit).last
+    else
+      non_trump_cards.in_play.by_strength(trump_suit).first
+    end.play
+  end
+
+  def highest_trump
+    cards.in_play.by_strength(trump_suit).first
+  end
+
+  def trump_count
+    trump_cards.size
+  end
+
+  def cards_by_strength
+    cards.by_strength(trump_suit)
+  end
+
+  def trump_cards
+    cards.trump(trump_suit)
+  end
+
+  def non_trump_cards
+    cards.non_trump(trump_suit)
   end
 
   def highest_bid
@@ -75,8 +106,7 @@ class Hand < ActiveRecord::Base
   end
 
   def bower_count(suit)
-    left_suit = Deck.match(suit)
-    cards.where(rank: 'Jack').where("suit = ? or suit = ?", suit, left_suit).size
+    cards.where(rank: 'Jack').where("suit = ? or suit = ?", suit, Deck.match(suit)).size
   end
 
   def non_trump_ace_count(suit)

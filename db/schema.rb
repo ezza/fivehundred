@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170507080909) do
+ActiveRecord::Schema.define(version: 20170509075751) do
 
   create_table "bids", force: :cascade do |t|
     t.integer  "hand_id"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20170507080909) do
   create_table "cards", force: :cascade do |t|
     t.integer  "hand_id"
     t.integer  "game_id"
+    t.integer  "trick_id"
     t.string   "rank"
     t.string   "suit"
     t.datetime "created_at", null: false
@@ -45,6 +46,13 @@ ActiveRecord::Schema.define(version: 20170507080909) do
     t.integer  "bid_order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tricks", force: :cascade do |t|
+    t.integer  "game_id"
+    t.integer  "won_by_hand_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
 end

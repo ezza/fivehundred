@@ -234,4 +234,28 @@ RSpec.describe Hand, type: :model do
     end
   end
 
+  describe "leading a card" do
+    before do
+      @game.update_attributes(trump_suit: 'Hearts')
+
+      @s6  = @hand.cards.create(game: @game, rank: 6, suit: "Spades")
+      @h9  = @hand.cards.create(game: @game, rank: 10, suit: "Hearts")
+      @h8  = @hand.cards.create(game: @game, rank: 8, suit: "Hearts")
+      @ca  = @hand.cards.create(game: @game, rank: "Ace", suit: "Clubs")
+    end
+
+    it "leads the highest trump if it has it" do
+      @jk = @hand.cards.create(game: @game, rank: "Joker", suit: nil)
+
+      expect{ @hand.lead }.to change{ @jk.reload.trick }.from(nil)
+    end
+
+    it "leads the lowest trump if it does not have the top" do
+      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds")
+
+      expect{ @hand.lead }.to change{ @h8.reload.trick }.from(nil)
+    end
+
+  end
+
 end
