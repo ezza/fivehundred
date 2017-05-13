@@ -6,6 +6,7 @@ class CreateCards < ActiveRecord::Migration
       t.references :trick
       t.string :rank
       t.string :suit
+      t.boolean :is_trump, default: false
 
       t.timestamps null: false
     end

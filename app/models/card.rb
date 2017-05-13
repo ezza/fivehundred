@@ -19,10 +19,6 @@ class Card < ActiveRecord::Base
     where("suit = ? or (suit = ? and rank = ?) or rank = ?", suit, Deck.match(suit), 'Jack', 'Joker')
   end
 
-  def self.non_trump(suit)
-    where.not(suit: suit).where.not("suit = ? and rank = ?", Deck.match(suit), 'Jack')
-  end
-
   def play
     update_attributes!(trick: game.tricks.create)
   end

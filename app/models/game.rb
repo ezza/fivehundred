@@ -25,13 +25,17 @@ class Game < ActiveRecord::Base
   def award_bid
     return unless bids.inactive.count >= 3
 
-    winning_bid = game.bids.active.last
+    winning_bid = bids.active.last
 
-    game.cards.unassigned.each do |card|
+    update_attributes(trump_suit: winning_bid.suit)
+
+    cards.unassigned.each do |card|
       card.update_attributes(hand: winning_bid.hand)
     end
 
-    winning_bid.hand.discard_kitty
+    cards.trump(trump_suit).update_all(is_trump: true)
+
+    winning_bid.hand.choose_kitty
   end
 
 end

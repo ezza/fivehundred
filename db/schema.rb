@@ -29,8 +29,9 @@ ActiveRecord::Schema.define(version: 20170509075751) do
     t.integer  "trick_id"
     t.string   "rank"
     t.string   "suit"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.boolean  "is_trump",   default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   create_table "games", force: :cascade do |t|
