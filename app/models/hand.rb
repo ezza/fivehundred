@@ -30,17 +30,31 @@ class Hand < ActiveRecord::Base
   end
 
   def lead
-    if highest_trump == game.cards.in_play.by_strength(trump_suit).first
+    if have_highest_trump_in_game
       highest_trump
     elsif trump_count > 1
-      trump_cards.in_play.by_strength(trump_suit).last
+      trump_cards.by_strength(trump_suit).last
+    elsif highest_in_game_for_a_suit
+      highest_in_game_for_a_suit
+    elsif shortest_suit
+      non_trump_cards.where(suit: shortest_suit).by_strength(trump_suit).last
     else
-      non_trump_cards.in_play.by_strength(trump_suit).first
+      cards.in_play.by_strength(trump_suit).last
     end.play
   end
 
+  def have_highest_trump_in_game
+    highest_trump == game.cards.in_play.by_strength(trump_suit).first
+  end
+
   def highest_trump
-    cards.in_play.by_strength(trump_suit).first
+    cards.by_strength(trump_suit).first
+  end
+
+  def highest_in_game_for_a_suit
+    non_trump_cards.by_strength(trump_suit).detect do |card|
+      card == game.cards.non_trump(trump_suit).where(suit: card.suit).by_strength(trump_suit).first
+    end
   end
 
   def trump_count
@@ -52,11 +66,17 @@ class Hand < ActiveRecord::Base
   end
 
   def trump_cards
-    cards.trump(trump_suit)
+    cards.in_play.trump(trump_suit)
   end
 
   def non_trump_cards
-    cards.non_trump(trump_suit)
+    cards.in_play.non_trump(trump_suit)
+  end
+
+  def shortest_suit
+    non_trump_cards.pluck(:suit).uniq.sort_by do |suit|
+      non_trump_cards.where(suit: suit).size
+    end.first
   end
 
   def highest_bid
