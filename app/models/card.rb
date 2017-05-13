@@ -23,6 +23,10 @@ class Card < ActiveRecord::Base
     where(is_trump: false)
   end
 
+  def self.for_suit(suit)
+    where(suit: suit)
+  end
+
   def self.trumps_when(suit)
     where("suit = ? or (suit = ? and rank = ?) or rank = ?", suit, Deck.match(suit), 'Jack', 'Joker')
   end
@@ -31,8 +35,16 @@ class Card < ActiveRecord::Base
     update_attributes!(trick: game.tricks.create)
   end
 
+  def highest_in_suit?
+    self == if is_trump
+      game.cards.trump.in_play.first
+    else
+      game.cards.non_trump.where(suit: suit).in_play.first
+    end
+  end
+
   def set_strength
-    update_attributes(strength: calculate_strength)
+    update_attributes(strength: calculate_strength(game.trump_suit)) if game.trump_suit
   end
 
   def calculate_strength(trump_suit)

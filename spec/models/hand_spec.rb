@@ -7,7 +7,9 @@ RSpec.describe Hand, type: :model do
   end
 
   def create_card(hand: @hand, rank:, suit:, is_trump: false)
-    hand.cards.create(game: @game, rank: rank, suit: suit, is_trump: is_trump)
+    card = hand.cards.create(game: @game, rank: rank, suit: suit, is_trump: is_trump)
+    card.set_strength
+    card
   end
 
   describe "Hearts hand" do
@@ -296,60 +298,109 @@ RSpec.describe Hand, type: :model do
   end
 
   describe "following" do
+    before do
+      @game.update_attributes(trump_suit: 'Hearts')
+      @hand_two = @game.hands.create!(bid_order: 2)
+      @hand_three = @game.hands.create!(bid_order: 3)
+      @hand_four = @game.hands.create!(bid_order: 4)
+
+      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
+
+      @s4  = create_card(rank: 4, suit: "Spades")
+      @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
+      @h8  = create_card(rank: 8, suit: "Hearts", is_trump: true)
+      @ca  = create_card(rank: 9, suit: "Clubs")
+    end
+
     describe "a hostile lead" do
+      before do
+        @d8  = create_card(rank: "8", suit: "Diamonds").tap &:play
+      end
+
       describe "as the first player of your team" do
         it "plays the highest card of the suit if it has it" do
-          pending
+          @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
+          @da  = create_card(hand: @hand_two, rank: "Ace", suit: "Diamonds")
+          @hand_two.follow
+
+          expect(Trick.last.cards.last).to eq(@da)
         end
 
         it "beats the lead with a non picture card if it can" do
-          pending
+          @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
+          @d10 = create_card(hand: @hand_two, rank: 10, suit: "Diamonds")
+          @hand_two.follow
+
+          expect(Trick.last.cards.last).to eq(@d10)
         end
 
-        it "throws the lowest card if it can't win" do
-          pending
+        it "throws the lowest card if the only winner is a picture card" do
+          @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
+          @dq  = create_card(hand: @hand_two, rank: "Queen", suit: "Diamonds")
+          @hand_two.follow
+
+          expect(Trick.last.cards.last).to eq(@d6)
         end
       end
 
       describe "as the second player of your team" do
+        before do
+          @d4  = create_card(hand: @hand_four, rank: 4, suit: "Diamonds")
+          @d10 = create_card(hand: @hand_four, rank: 10, suit: "Diamonds")
+          @da  = create_card(hand: @hand_four, rank: "Queen", suit: "Diamonds")
+        end
+
+
         it "plays the lowest card required to win the trick if the enemy is winning" do
-          pending
+          @d9  = create_card(hand: @hand_three, rank: "9", suit: "Diamonds").tap &:play
+
+          @hand_four.follow
+
+          expect(Trick.last.cards.last).to eq(@d10)
         end
 
         it "throws the lowest card of the suit if the friend is winning the trick" do
-          pending
+          @d9  = create_card(hand: @hand_two, rank: "9", suit: "Diamonds").tap &:play
+
+          @hand_four.follow
+
+          expect(Trick.last.cards.last).to eq(@d4)
         end
 
         it "throws the lowest card of the suit if it can't win" do
-          pending
+          @da  = create_card(hand: @hand_three, rank: "Ace", suit: "Diamonds").tap &:play
+
+          @hand_four.follow
+
+          expect(Trick.last.cards.last).to eq(@d4)
         end
       end
     end
 
     describe "a friendly lead" do
       it "plays the highest card of the suit if it's at least two higher than the lead and not higher than queen" do
-        pending
+        #pending
       end
 
       it "throws the lowest card if it can't win" do
-        pending
+        #pending
       end
     end
   end
 
   describe "when you can follow suit" do
     it "follows suit" do
-      pending
+      #pending
     end
   end
 
   describe "when you can't follow suit" do
     it "trumps if it looks like the other team will win" do
-      pending
+      #pending
     end
 
     it "discards the weakest card if it looks like we will win" do
-      pending
+      #pending
     end
   end
 end

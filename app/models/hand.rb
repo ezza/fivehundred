@@ -43,6 +43,24 @@ class Hand < ActiveRecord::Base
     end.play
   end
 
+  def follow(suit = game.tricks.last.cards.first.suit)
+    if suit == trump_suit
+      follow_trump
+    else
+      follow_non_trump(suit)
+    end.play
+  end
+
+  def follow_trump
+
+  end
+
+  def follow_non_trump(suit)
+    if highest_in_game_for_suit(suit)
+      highest_in_game_for_suit(suit)
+    end
+  end
+
   def have_highest_trump_in_game
     highest_trump == game.cards.in_play.first
   end
@@ -53,7 +71,13 @@ class Hand < ActiveRecord::Base
 
   def highest_in_game_for_a_suit
     cards.non_trump.in_play.detect do |card|
-      card == game.cards.non_trump.where(suit: card.suit).in_play.first
+      card.highest_in_suit?
+    end
+  end
+
+  def highest_in_game_for_suit(suit)
+    cards.non_trump.for_suit(suit).in_play.detect do |card|
+      card.highest_in_suit?
     end
   end
 
