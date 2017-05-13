@@ -29,13 +29,19 @@ class Game < ActiveRecord::Base
 
     update_attributes(trump_suit: winning_bid.suit)
 
-    cards.unassigned.each do |card|
-      card.update_attributes(hand: winning_bid.hand)
-    end
+    cards.unassigned.update_all(hand_id: winning_bid.hand_id)
 
     cards.trumps_when(trump_suit).update_all(is_trump: true)
 
+    set_card_strength
+
     winning_bid.hand.choose_kitty
+  end
+
+  def set_card_strength
+    cards.each do |card|
+      card.update_attributes(strength: card.calculate_strength(trump_suit))
+    end
   end
 
 end

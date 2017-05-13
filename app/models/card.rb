@@ -7,12 +7,12 @@ class Card < ActiveRecord::Base
     where(hand: nil)
   end
 
-  def self.by_strength(suit)
-    all.sort_by{ |c| c.strength(suit) }.reverse
+  def self.by_strength
+    order('strength DESC')
   end
 
   def self.in_play
-    where(trick: nil).where.not(hand: nil)
+    where(trick: nil).where.not(hand: nil).by_strength
   end
 
   def self.trump
@@ -31,7 +31,11 @@ class Card < ActiveRecord::Base
     update_attributes!(trick: game.tricks.create)
   end
 
-  def strength(trump_suit)
+  def set_strength
+    update_attributes(strength: calculate_strength)
+  end
+
+  def calculate_strength(trump_suit)
     value + case
     when suit == trump_suit && rank == "Jack"
       20

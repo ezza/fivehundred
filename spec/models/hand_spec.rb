@@ -6,17 +6,21 @@ RSpec.describe Hand, type: :model do
     @hand = @game.hands.create(bid_order: 1)
   end
 
+  def create_card(hand: @hand, rank:, suit:, is_trump: false)
+    hand.cards.create(game: @game, rank: rank, suit: suit, is_trump: is_trump)
+  end
+
   describe "Hearts hand" do
     before do
-      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
-      @hand.cards.create(rank: 8, suit: "Hearts")
-      @hand.cards.create(rank: 'Ace', suit: "Clubs")
-      @hand.cards.create(rank: 6, suit: "Spades")
-      @hand.cards.create(rank: 10, suit: "Spades")
-      @hand.cards.create(rank: 'Queen', suit: "Diamonds")
+      create_card(rank: 'Jack', suit: "Diamonds")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
+      create_card(rank: 8, suit: "Hearts")
+      create_card(rank: 'Ace', suit: "Clubs")
+      create_card(rank: 6, suit: "Spades")
+      create_card(rank: 10, suit: "Spades")
+      create_card(rank: 'Queen', suit: "Diamonds")
     end
 
     describe "strength" do
@@ -40,10 +44,10 @@ RSpec.describe Hand, type: :model do
 
   describe "first bid" do
     it "bids with four trumps including bower" do
-      @hand.cards.create(rank: 'Jack', suit: "Hearts")
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
+      create_card(rank: 'Jack', suit: "Hearts")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
 
       @hand.make_bid
 
@@ -55,10 +59,10 @@ RSpec.describe Hand, type: :model do
     end
 
     it "bids with three trumps and the left bower" do
-      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
+      create_card(rank: 'Jack', suit: "Diamonds")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
 
       @hand.make_bid
 
@@ -70,11 +74,11 @@ RSpec.describe Hand, type: :model do
     end
 
     it "bids with five trumps and no bower" do
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 'Queen', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
-      @hand.cards.create(rank: 4, suit: "Hearts")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 'Queen', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
+      create_card(rank: 4, suit: "Hearts")
 
       @hand.make_bid
 
@@ -86,10 +90,10 @@ RSpec.describe Hand, type: :model do
     end
 
     it "passes with four trumps and no bower" do
-      @hand.cards.create(rank: 'Queen', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
-      @hand.cards.create(rank: 4, suit: "Hearts")
+      create_card(rank: 'Queen', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
+      create_card(rank: 4, suit: "Hearts")
 
       @hand.make_bid
 
@@ -108,11 +112,11 @@ RSpec.describe Hand, type: :model do
     end
 
     it "bids 7 with a black hand" do
-      @hand.cards.create(rank: 'Jack', suit: "Clubs")
-      @hand.cards.create(rank: 'Ace', suit: "Spades")
-      @hand.cards.create(rank: 10, suit: "Spades")
-      @hand.cards.create(rank: 9, suit: "Spades")
-      @hand.cards.create(rank: 'Ace', suit: "Diamonds")
+      create_card(rank: 'Jack', suit: "Clubs")
+      create_card(rank: 'Ace', suit: "Spades")
+      create_card(rank: 10, suit: "Spades")
+      create_card(rank: 9, suit: "Spades")
+      create_card(rank: 'Ace', suit: "Diamonds")
       @hand.make_bid
 
       expect(
@@ -123,10 +127,10 @@ RSpec.describe Hand, type: :model do
     end
 
     it "passes with a red hand" do
-      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
+      create_card(rank: 'Jack', suit: "Diamonds")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
       @hand.make_bid
 
       expect(
@@ -137,15 +141,15 @@ RSpec.describe Hand, type: :model do
     end
 
     it "bids the colour not bid by the opponents" do
-      @hand.cards.create(rank: 'Jack', suit: "Diamonds")
-      @hand.cards.create(rank: 'Ace', suit: "Hearts")
-      @hand.cards.create(rank: 10, suit: "Hearts")
-      @hand.cards.create(rank: 9, suit: "Hearts")
-      @hand.cards.create(rank: 8, suit: "Hearts")
-      @hand.cards.create(rank: 'Jack', suit: "Clubs")
-      @hand.cards.create(rank: 'Ace', suit: "Spades")
-      @hand.cards.create(rank: 10, suit: "Spades")
-      @hand.cards.create(rank: 9, suit: "Spades")
+      create_card(rank: 'Jack', suit: "Diamonds")
+      create_card(rank: 'Ace', suit: "Hearts")
+      create_card(rank: 10, suit: "Hearts")
+      create_card(rank: 9, suit: "Hearts")
+      create_card(rank: 8, suit: "Hearts")
+      create_card(rank: 'Jack', suit: "Clubs")
+      create_card(rank: 'Ace', suit: "Spades")
+      create_card(rank: 10, suit: "Spades")
+      create_card(rank: 9, suit: "Spades")
       @hand.make_bid
 
       expect(
@@ -211,24 +215,30 @@ RSpec.describe Hand, type: :model do
 
   describe "discarding kitty" do
     before do
-      @s6  = @hand.cards.create(rank: 6, suit: "Spades")
-      @h10 = @hand.cards.create(rank: 10, suit: "Hearts")
-      @h9  = @hand.cards.create(rank: 9, suit: "Hearts")
-      @h8  = @hand.cards.create(rank: 8, suit: "Hearts")
+      @s6  = create_card(rank: 6, suit: "Spades")
+      @h10 = create_card(rank: 10, suit: "Hearts")
+      @h9  = create_card(rank: 9, suit: "Hearts")
+      @h8  = create_card(rank: 8, suit: "Hearts")
     end
 
     it "discards the lowest three cards" do
       @game.update_attributes(trump_suit: 'Diamonds')
+      @hand.cards.where(suit: "Hearts").update_all(is_trump: true)
 
-      @hand.choose_kitty
+      @game.set_card_strength
+
+      @hand.reload.choose_kitty
 
       expect(@hand.cards.reload).to eq([@h10])
     end
 
     it "does not discard trumps" do
       @game.update_attributes(trump_suit: 'Spades')
+      @hand.cards.where(suit: "Spades").update_all(is_trump: true)
 
-      @hand.choose_kitty
+      @game.set_card_strength
+
+      @hand.reload.choose_kitty
 
       expect(@hand.cards.reload).to eq([@s6])
     end
@@ -240,20 +250,23 @@ RSpec.describe Hand, type: :model do
 
       @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
 
-      @s4  = @hand.cards.create(game: @game, rank: "4", suit: "Spades")
-      @h9  = @hand.cards.create(game: @game, rank: 10, suit: "Hearts", is_trump: true)
-      @h8  = @hand.cards.create(game: @game, rank: 8, suit: "Hearts", is_trump: true)
-      @ca  = @hand.cards.create(game: @game, rank: "Ace", suit: "Clubs")
+      @s4  = create_card(rank: "4", suit: "Spades")
+      @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
+      @h8  = create_card(rank: 8, suit: "Hearts", is_trump: true)
+      @ca  = create_card(rank: "Ace", suit: "Clubs")
     end
 
     it "leads the highest trump if it has it" do
-      @jk = @hand.cards.create(game: @game, rank: "Joker", suit: nil, is_trump: true)
+      @jk = create_card(rank: "Joker", suit: nil, is_trump: true)
+
+      @game.set_card_strength
 
       @hand.lead
       expect(Trick.last.cards[0]).to eq(@jk)
     end
 
     it "leads the lowest trump if it does not have the top" do
+      @game.set_card_strength
 
       @hand.lead
       expect(Trick.last.cards[0]).to eq(@h8)
@@ -261,6 +274,8 @@ RSpec.describe Hand, type: :model do
 
     it "leads the highest of an offsuit if it has one" do
       @h8.destroy
+
+      @game.set_card_strength
 
       @hand.lead
       expect(Trick.last.cards[0]).to eq(@ca)
@@ -272,6 +287,8 @@ RSpec.describe Hand, type: :model do
 
       @h8.update_attributes(suit: "Clubs", is_trump: false)
       @ca.update_attributes(rank: "Queen")
+
+      @game.set_card_strength
 
       @hand.lead
       expect(Trick.last.cards[0]).to eq(@s4)

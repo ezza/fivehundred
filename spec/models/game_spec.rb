@@ -53,5 +53,9 @@ RSpec.describe Game, type: :model do
     it "marks the correct number of cards as trumps" do
       expect(@game.cards.where(is_trump: true).count).to eq(13)
     end
+
+    it "sets the value of each card correctly" do
+      expect(@game.cards.where(is_trump: true).count).to eq(13)
+    end
   end
 end

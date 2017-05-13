@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170509075751) do
     t.string   "rank"
     t.string   "suit"
     t.boolean  "is_trump",   default: false
+    t.integer  "strength"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end

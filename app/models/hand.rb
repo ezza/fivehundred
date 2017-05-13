@@ -24,7 +24,7 @@ class Hand < ActiveRecord::Base
   end
 
   def choose_kitty
-    cards.by_strength(trump_suit).last(3).each do |card|
+    cards.by_strength.last(3).each do |card|
       card.update_attributes!(hand: nil)
     end
   end
@@ -33,36 +33,32 @@ class Hand < ActiveRecord::Base
     if have_highest_trump_in_game
       highest_trump
     elsif trump_count > 1
-      cards.trump.in_play.by_strength(trump_suit).last
+      cards.trump.in_play.last
     elsif highest_in_game_for_a_suit
       highest_in_game_for_a_suit
     elsif shortest_suit
-      cards.non_trump.in_play.where(suit: shortest_suit).by_strength(trump_suit).last
+      cards.non_trump.in_play.where(suit: shortest_suit).last
     else
-      cards.in_play.by_strength(trump_suit).last
+      cards.in_play.last
     end.play
   end
 
   def have_highest_trump_in_game
-    highest_trump == game.cards.in_play.by_strength(trump_suit).first
+    highest_trump == game.cards.in_play.first
   end
 
   def highest_trump
-    cards.by_strength(trump_suit).first
+    cards.in_play.first
   end
 
   def highest_in_game_for_a_suit
-    cards.non_trump.in_play.by_strength(trump_suit).detect do |card|
-      card == game.cards.non_trump.where(suit: card.suit).by_strength(trump_suit).first
+    cards.non_trump.in_play.detect do |card|
+      card == game.cards.non_trump.where(suit: card.suit).in_play.first
     end
   end
 
   def trump_count
     cards.trump.in_play.size
-  end
-
-  def cards_by_strength
-    cards.by_strength(trump_suit)
   end
 
   def shortest_suit

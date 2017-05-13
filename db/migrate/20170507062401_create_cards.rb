@@ -7,6 +7,7 @@ class CreateCards < ActiveRecord::Migration
       t.string :rank
       t.string :suit
       t.boolean :is_trump, default: false
+      t.integer :strength
 
       t.timestamps null: false
     end
