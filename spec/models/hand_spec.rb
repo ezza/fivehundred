@@ -295,10 +295,61 @@ RSpec.describe Hand, type: :model do
     end
   end
 
-  describe "following a lead" do
-    it "plays well" do
+  describe "following" do
+    describe "a hostile lead" do
+      describe "as the first player of your team" do
+        it "plays the highest card of the suit if it has it" do
+          pending
+        end
+
+        it "beats the lead with a non picture card if it can" do
+          pending
+        end
+
+        it "throws the lowest card if it can't win" do
+          pending
+        end
+      end
+
+      describe "as the second player of your team" do
+        it "plays the lowest card required to win the trick if the enemy is winning" do
+          pending
+        end
+
+        it "throws the lowest card of the suit if the friend is winning the trick" do
+          pending
+        end
+
+        it "throws the lowest card of the suit if it can't win" do
+          pending
+        end
+      end
+    end
+
+    describe "a friendly lead" do
+      it "plays the highest card of the suit if it's at least two higher than the lead and not higher than queen" do
+        pending
+      end
+
+      it "throws the lowest card if it can't win" do
+        pending
+      end
+    end
+  end
+
+  describe "when you can follow suit" do
+    it "follows suit" do
       pending
     end
   end
 
+  describe "when you can't follow suit" do
+    it "trumps if it looks like the other team will win" do
+      pending
+    end
+
+    it "discards the weakest card if it looks like we will win" do
+      pending
+    end
+  end
 end
