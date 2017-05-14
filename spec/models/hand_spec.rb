@@ -438,6 +438,14 @@ RSpec.describe Hand, type: :model do
         expect(Trick.last.cards_played.last).to eq(@c9)
       end
     end
+
+    describe "following trumps" do
+      it "should behave mostly like other suits, just watch out for the bowers" do
+        pending
+        raise "not yet implemented"
+      end
+    end
+
   end
 
 end
