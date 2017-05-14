@@ -306,7 +306,7 @@ RSpec.describe Hand, type: :model do
 
       @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
 
-      @s4  = create_card(rank: 4, suit: "Spades")
+      @s4  = create_card(rank: "King", suit: "Spades")
       @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
       @h8  = create_card(rank: 8, suit: "Hearts", is_trump: true)
       @ca  = create_card(rank: 9, suit: "Clubs")
@@ -383,14 +383,40 @@ RSpec.describe Hand, type: :model do
     end
 
     describe "a friendly lead" do
-      it "plays the highest card of the suit if it's at least two higher than the lead and not higher than queen" do
-        pending
-        raise "not yet implemented"
+      before do
+        @s8 = create_card(rank: "9", suit: "Spades").tap &:lead
       end
 
-      it "throws the lowest card if it can't win" do
-        pending
-        raise "not yet implemented"
+      it "plays the highest card of the suit if it has it" do
+        @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
+        @sa  = create_card(hand: @hand_three, rank: "Ace", suit: "Spades")
+        @hand_three.follow
+
+        expect(Trick.last.cards_played.last).to eq(@sa)
+      end
+
+      it "plays the highest card of the suit if it's at least two higher than the lead" do
+        @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
+        @sj  = create_card(hand: @hand_three, rank: "Jack", suit: "Spades")
+        @hand_three.follow
+
+        expect(Trick.last.cards_played.last).to eq(@sj)
+      end
+
+      it "throws the lowest card if its highest card is the queen or king" do
+        @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
+        @sj  = create_card(hand: @hand_three, rank: "Queen", suit: "Spades")
+        @hand_three.follow
+
+        expect(Trick.last.cards_played.last).to eq(@s6)
+      end
+
+      it "throws the lowest card if its highest card is only one higher than the lead" do
+        @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
+        @sj  = create_card(hand: @hand_three, rank: 10, suit: "Spades")
+        @hand_three.follow
+
+        expect(Trick.last.cards_played.last).to eq(@s6)
       end
     end
   end

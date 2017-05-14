@@ -58,14 +58,14 @@ class Hand < ActiveRecord::Base
   end
 
   def follow_non_trump(suit)
-    if last_to_play? && partner_winning?
+    if partner_winning? && last_to_play?
       lowest_for_suit(suit)
     elsif last_to_play?
-      cards.non_trump.for_suit(suit).in_play.reverse.detect do |card|
-        card.strength > game.tricks.last.cards_played.maximum(:strength)
-      end || cards.non_trump.for_suit(suit).in_play.last
+      lowest_winner(suit) || lowest_for_suit(suit)
     elsif highest_for_suit(suit).highest_in_suit?
       highest_for_suit(suit)
+    elsif partner_winning?
+      lowest_beater(suit) || lowest_for_suit(suit)
     else
       lowest_for_suit(suit)
     end
@@ -83,6 +83,10 @@ class Hand < ActiveRecord::Base
     [3, -1].include?(bid_order - game.tricks.last.cards_played.first.hand.bid_order)
   end
 
+  def winning_card_strength
+    game.tricks.last.cards_played.maximum(:strength)
+  end
+
   def partner_winning?
     game.tricks.last.leading_hand.bid_order % 2 == bid_order % 2
   end
@@ -92,17 +96,29 @@ class Hand < ActiveRecord::Base
   end
 
   def highest_in_game_for_a_suit
-    cards.non_trump.in_play.detect do |card|
-      card.highest_in_suit?
-    end
+    cards.non_trump.in_play.detect { |card| card.highest_in_suit? }
   end
 
   def highest_for_suit(suit)
-    cards.non_trump.for_suit(suit).in_play.first
+    for_suit(suit).in_play.first
   end
 
   def lowest_for_suit(suit)
-    cards.non_trump.for_suit(suit).in_play.last
+    for_suit(suit).in_play.last
+  end
+
+  def lowest_winner(suit)
+    for_suit(suit).reverse.detect { |card| card.strength > winning_card_strength }
+  end
+
+  def lowest_beater(suit)
+    for_suit(suit).where("strength > ?", winning_card_strength.floor + 2)
+      .where("strength < 12")
+      .last
+  end
+
+  def for_suit(suit)
+    cards.non_trump.for_suit(suit).in_play
   end
 
   def trump_count
