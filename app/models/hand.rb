@@ -36,20 +36,16 @@ class Hand < ActiveRecord::Base
       cards.trump.in_play.last
     elsif highest_in_game_for_a_suit
       highest_in_game_for_a_suit
-    elsif shortest_suit
-      cards.non_trump.in_play.where(suit: shortest_suit).last
     else
-      cards.in_play.last
+      worst_card
     end.lead
   end
 
   def follow(suit = game.tricks.last.cards.first.suit)
     if suit == trump_suit
       follow_trump
-    elsif cards.non_trump.in_play.for_suit(suit).any?
+    else cards.non_trump.in_play.for_suit(suit).any?
       follow_non_trump(suit)
-    else
-      non_follow_non_trump(suit)
     end.play
   end
 
@@ -58,7 +54,11 @@ class Hand < ActiveRecord::Base
   end
 
   def follow_non_trump(suit)
-    if partner_winning? && last_to_play?
+    if cant_follow_suit?(suit) && ( no_trumps? || partner_winning? )
+      worst_card
+    elsif cant_follow_suit?(suit)
+      lowest_trump
+    elsif partner_winning? && last_to_play?
       lowest_for_suit(suit)
     elsif last_to_play?
       lowest_winner(suit) || lowest_for_suit(suit)
@@ -71,24 +71,28 @@ class Hand < ActiveRecord::Base
     end
   end
 
-  def non_follow_non_trump(suit)
-    cards.in_play.last
-  end
-
   def have_highest_trump_in_game
     highest_trump == game.cards.in_play.first
-  end
-
-  def last_to_play?
-    [3, -1].include?(bid_order - game.tricks.last.cards_played.first.hand.bid_order)
   end
 
   def winning_card_strength
     game.tricks.last.cards_played.maximum(:strength)
   end
 
+  def last_to_play?
+    [3, -1].include?(bid_order - game.tricks.last.cards_played.first.hand.bid_order)
+  end
+
+  def cant_follow_suit?(suit)
+    !for_suit(suit).any?
+  end
+
   def partner_winning?
     game.tricks.last.leading_hand.bid_order % 2 == bid_order % 2
+  end
+
+  def no_trumps?
+    !cards.trump.in_play.any?
   end
 
   def highest_trump
@@ -101,6 +105,10 @@ class Hand < ActiveRecord::Base
 
   def highest_for_suit(suit)
     for_suit(suit).in_play.first
+  end
+
+  def lowest_trump
+    cards.trump.in_play.last
   end
 
   def lowest_for_suit(suit)
@@ -127,8 +135,12 @@ class Hand < ActiveRecord::Base
 
   def shortest_suit
     cards.non_trump.in_play.pluck(:suit).uniq.sort_by do |suit|
-      cards.non_trump.in_play.where(suit: suit).size
+      [for_suit(suit).size, for_suit(suit).maximum(:strength)]
     end.first
+  end
+
+  def worst_card
+    cards.non_trump.in_play.where(suit: shortest_suit).last || cards.in_play.last
   end
 
   def highest_bid

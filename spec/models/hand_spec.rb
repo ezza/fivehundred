@@ -306,10 +306,10 @@ RSpec.describe Hand, type: :model do
 
       @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
 
-      @s4  = create_card(rank: "King", suit: "Spades")
-      @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
+      @ks  = create_card(rank: "King", suit: "Spades")
+      @h10  = create_card(rank: 10, suit: "Hearts", is_trump: true)
       @h8  = create_card(rank: 8, suit: "Hearts", is_trump: true)
-      @ca  = create_card(rank: 9, suit: "Clubs")
+      @c9 = create_card(rank: 9, suit: "Clubs")
     end
 
     describe "a hostile lead" do
@@ -419,24 +419,25 @@ RSpec.describe Hand, type: :model do
         expect(Trick.last.cards_played.last).to eq(@s6)
       end
     end
-  end
 
-  describe "when you can follow suit" do
-    it "follows suit" do
-      pending
-      raise "not yet implemented"
+    describe "when you can't follow suit" do
+      before do
+      end
+
+      it "trumps if it looks like the other team will win" do
+        @d8 = create_card(hand: @hand_two, rank: "8", suit: "Diamonds").tap &:lead
+        @hand.follow
+
+        expect(Trick.last.cards_played.last).to eq(@h8)
+      end
+
+      it "discards the weakest card if we're winning" do
+        @d8 = create_card(hand: @hand_three, rank: "8", suit: "Diamonds").tap &:lead
+        @hand.follow
+
+        expect(Trick.last.cards_played.last).to eq(@c9)
+      end
     end
   end
 
-  describe "when you can't follow suit" do
-    it "trumps if it looks like the other team will win" do
-      pending
-      raise "not yet implemented"
-    end
-
-    it "discards the weakest card if it looks like we will win" do
-      pending
-      raise "not yet implemented"
-    end
-  end
 end
