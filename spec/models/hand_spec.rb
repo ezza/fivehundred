@@ -330,15 +330,6 @@ RSpec.describe Hand, type: :model do
           expect(Trick.last.cards_played.last).to eq(@da)
         end
 
-        it "beats the lead with a non picture card if it can" do
-          pending "not sure this is actually good play"
-          @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
-          @d10 = create_card(hand: @hand_two, rank: 10, suit: "Diamonds")
-          @hand_two.follow
-
-          expect(Trick.last.cards_played.last).to eq(@d10)
-        end
-
         it "throws the lowest card if the only winner is a picture card" do
           @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
           @dq  = create_card(hand: @hand_two, rank: "Queen", suit: "Diamonds")
@@ -395,15 +386,13 @@ RSpec.describe Hand, type: :model do
           expect(Trick.last.cards_played.last).to eq(@jk)
         end
 
-        it "throws the lowest card if it doesn't have a winner" do
+        it "throws the lowest card if it doesn't have the winner" do
           @hand.follow
 
           expect(Trick.last.cards_played.last).to eq(@h8)
         end
       end
-
     end
-
 
     describe "a friendly lead" do
       before do
@@ -461,14 +450,5 @@ RSpec.describe Hand, type: :model do
         expect(Trick.last.cards_played.last).to eq(@c9)
       end
     end
-
-    describe "following trumps" do
-      it "should behave mostly like other suits, just watch out for the bowers" do
-        pending
-        raise "not yet implemented"
-      end
-    end
-
   end
-
 end
