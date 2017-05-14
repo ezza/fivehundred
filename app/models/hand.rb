@@ -41,20 +41,8 @@ class Hand < ActiveRecord::Base
     end.lead
   end
 
-  def follow(suit = game.tricks.last.cards.first.suit)
-    if suit == trump_suit
-      follow_trump
-    else cards.non_trump.in_play.for_suit(suit).any?
-      follow_non_trump(suit)
-    end.play
-  end
-
-  def follow_trump
-    highest_trump
-  end
-
-  def follow_non_trump(suit)
-    if cant_follow_suit?(suit) && ( no_trumps? || partner_winning? )
+  def follow(suit = game.tricks.last.suit_lead)
+    if cant_follow_suit?(suit) && cant_trump?(suit)
       worst_card
     elsif cant_follow_suit?(suit)
       lowest_trump
@@ -62,17 +50,22 @@ class Hand < ActiveRecord::Base
       lowest_for_suit(suit)
     elsif last_to_play?
       lowest_winner(suit) || lowest_for_suit(suit)
-    elsif highest_for_suit(suit).highest_in_suit?
+    elsif have_highest_card_for_trick?(suit)
       highest_for_suit(suit)
     elsif partner_winning?
       lowest_beater(suit) || lowest_for_suit(suit)
     else
       lowest_for_suit(suit)
-    end
+    end.play
   end
 
   def have_highest_trump_in_game
     highest_trump == game.cards.in_play.first
+  end
+
+  def have_highest_card_for_trick?(suit)
+    highest_for_suit(suit).highest_in_suit? &&
+    winning_card_strength < highest_for_suit(suit).strength
   end
 
   def winning_card_strength
@@ -85,6 +78,10 @@ class Hand < ActiveRecord::Base
 
   def cant_follow_suit?(suit)
     !for_suit(suit).any?
+  end
+
+  def cant_trump?(suit)
+    no_trumps? || partner_winning? || suit == trump_suit
   end
 
   def partner_winning?
@@ -126,7 +123,11 @@ class Hand < ActiveRecord::Base
   end
 
   def for_suit(suit)
-    cards.non_trump.for_suit(suit).in_play
+    if suit == trump_suit
+      cards.trump.in_play
+    else
+      cards.non_trump.for_suit(suit).in_play
+    end
   end
 
   def trump_count

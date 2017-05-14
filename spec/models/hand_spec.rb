@@ -304,7 +304,7 @@ RSpec.describe Hand, type: :model do
       @hand_three = @game.hands.create!(bid_order: 3)
       @hand_four = @game.hands.create!(bid_order: 4)
 
-      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
+      @game.cards.create!(hand: @hand_two, rank: "Jack", suit: "Diamonds", is_trump: true)
 
       @ks  = create_card(rank: "King", suit: "Spades")
       @h10  = create_card(rank: 10, suit: "Hearts", is_trump: true)
@@ -355,7 +355,6 @@ RSpec.describe Hand, type: :model do
           @da  = create_card(hand: @hand_four, rank: "Queen", suit: "Diamonds")
         end
 
-
         it "plays the lowest card required to win the trick if the enemy is winning" do
           @d9  = create_card(hand: @hand_three, rank: "9", suit: "Diamonds").tap &:play
 
@@ -381,6 +380,30 @@ RSpec.describe Hand, type: :model do
         end
       end
     end
+
+    describe "a hostile trump lead" do
+      before do
+        @dj  = create_card(hand: @hand_four, rank: "Jack", suit: "Hearts").tap &:lead
+      end
+
+      describe "as the first player of your team" do
+        it "plays the joker if it has it" do
+          @jk  = create_card(hand: @hand, rank: "Joker", suit: nil, is_trump: true)
+
+          @hand.follow
+
+          expect(Trick.last.cards_played.last).to eq(@jk)
+        end
+
+        it "throws the lowest card if it doesn't have a winner" do
+          @hand.follow
+
+          expect(Trick.last.cards_played.last).to eq(@h8)
+        end
+      end
+
+    end
+
 
     describe "a friendly lead" do
       before do

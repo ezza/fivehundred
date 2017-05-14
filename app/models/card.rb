@@ -67,7 +67,7 @@ class Card < ActiveRecord::Base
   def value
     case rank
     when 'Joker'
-      31
+      32
     when 'Ace'
       14
     when 'King'
