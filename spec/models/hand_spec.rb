@@ -264,14 +264,14 @@ RSpec.describe Hand, type: :model do
       @game.set_card_strength
 
       @hand.lead
-      expect(Trick.last.cards[0]).to eq(@jk)
+      expect(Trick.last.cards_played[0]).to eq(@jk)
     end
 
     it "leads the lowest trump if it does not have the top" do
       @game.set_card_strength
 
       @hand.lead
-      expect(Trick.last.cards[0]).to eq(@h8)
+      expect(Trick.last.cards_played[0]).to eq(@h8)
     end
 
     it "leads the highest of an offsuit if it has one" do
@@ -280,7 +280,7 @@ RSpec.describe Hand, type: :model do
       @game.set_card_strength
 
       @hand.lead
-      expect(Trick.last.cards[0]).to eq(@ca)
+      expect(Trick.last.cards_played[0]).to eq(@ca)
     end
 
     it "leads the shortest suit if it has no winners" do
@@ -293,7 +293,7 @@ RSpec.describe Hand, type: :model do
       @game.set_card_strength
 
       @hand.lead
-      expect(Trick.last.cards[0]).to eq(@s4)
+      expect(Trick.last.cards_played[0]).to eq(@s4)
     end
   end
 
@@ -314,24 +314,29 @@ RSpec.describe Hand, type: :model do
 
     describe "a hostile lead" do
       before do
-        @d8  = create_card(rank: "8", suit: "Diamonds").tap &:play
+        @d8  = create_card(rank: "8", suit: "Diamonds").tap &:lead
       end
 
       describe "as the first player of your team" do
+        before do
+          @dk  = create_card(rank: "King", suit: "Diamonds")
+        end
+
         it "plays the highest card of the suit if it has it" do
           @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
           @da  = create_card(hand: @hand_two, rank: "Ace", suit: "Diamonds")
           @hand_two.follow
 
-          expect(Trick.last.cards.last).to eq(@da)
+          expect(Trick.last.cards_played.last).to eq(@da)
         end
 
         it "beats the lead with a non picture card if it can" do
+          pending "not sure this is actually good play"
           @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
           @d10 = create_card(hand: @hand_two, rank: 10, suit: "Diamonds")
           @hand_two.follow
 
-          expect(Trick.last.cards.last).to eq(@d10)
+          expect(Trick.last.cards_played.last).to eq(@d10)
         end
 
         it "throws the lowest card if the only winner is a picture card" do
@@ -339,7 +344,7 @@ RSpec.describe Hand, type: :model do
           @dq  = create_card(hand: @hand_two, rank: "Queen", suit: "Diamonds")
           @hand_two.follow
 
-          expect(Trick.last.cards.last).to eq(@d6)
+          expect(Trick.last.cards_played.last).to eq(@d6)
         end
       end
 
@@ -356,7 +361,7 @@ RSpec.describe Hand, type: :model do
 
           @hand_four.follow
 
-          expect(Trick.last.cards.last).to eq(@d10)
+          expect(Trick.last.cards_played.last).to eq(@d10)
         end
 
         it "throws the lowest card of the suit if the friend is winning the trick" do
@@ -364,7 +369,7 @@ RSpec.describe Hand, type: :model do
 
           @hand_four.follow
 
-          expect(Trick.last.cards.last).to eq(@d4)
+          expect(Trick.last.cards_played.last).to eq(@d4)
         end
 
         it "throws the lowest card of the suit if it can't win" do
@@ -372,35 +377,40 @@ RSpec.describe Hand, type: :model do
 
           @hand_four.follow
 
-          expect(Trick.last.cards.last).to eq(@d4)
+          expect(Trick.last.cards_played.last).to eq(@d4)
         end
       end
     end
 
     describe "a friendly lead" do
       it "plays the highest card of the suit if it's at least two higher than the lead and not higher than queen" do
-        #pending
+        pending
+        raise "not yet implemented"
       end
 
       it "throws the lowest card if it can't win" do
-        #pending
+        pending
+        raise "not yet implemented"
       end
     end
   end
 
   describe "when you can follow suit" do
     it "follows suit" do
-      #pending
+      pending
+      raise "not yet implemented"
     end
   end
 
   describe "when you can't follow suit" do
     it "trumps if it looks like the other team will win" do
-      #pending
+      pending
+      raise "not yet implemented"
     end
 
     it "discards the weakest card if it looks like we will win" do
-      #pending
+      pending
+      raise "not yet implemented"
     end
   end
 end

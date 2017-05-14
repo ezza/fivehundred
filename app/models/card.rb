@@ -31,8 +31,12 @@ class Card < ActiveRecord::Base
     where("suit = ? or (suit = ? and rank = ?) or rank = ?", suit, Deck.match(suit), 'Jack', 'Joker')
   end
 
-  def play
+  def lead
     update_attributes!(trick: game.tricks.create)
+  end
+
+  def play
+    update_attributes!(trick: game.tricks.last)
   end
 
   def highest_in_suit?

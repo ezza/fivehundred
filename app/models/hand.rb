@@ -40,29 +40,51 @@ class Hand < ActiveRecord::Base
       cards.non_trump.in_play.where(suit: shortest_suit).last
     else
       cards.in_play.last
-    end.play
+    end.lead
   end
 
   def follow(suit = game.tricks.last.cards.first.suit)
     if suit == trump_suit
       follow_trump
-    else
+    elsif cards.non_trump.in_play.for_suit(suit).any?
       follow_non_trump(suit)
+    else
+      non_follow_non_trump(suit)
     end.play
   end
 
   def follow_trump
-
+    highest_trump
   end
 
   def follow_non_trump(suit)
-    if highest_in_game_for_suit(suit)
-      highest_in_game_for_suit(suit)
+    if last_to_play? && partner_winning?
+      lowest_for_suit(suit)
+    elsif last_to_play?
+      cards.non_trump.for_suit(suit).in_play.reverse.detect do |card|
+        card.strength > game.tricks.last.cards_played.maximum(:strength)
+      end || cards.non_trump.for_suit(suit).in_play.last
+    elsif highest_for_suit(suit).highest_in_suit?
+      highest_for_suit(suit)
+    else
+      lowest_for_suit(suit)
     end
+  end
+
+  def non_follow_non_trump(suit)
+    cards.in_play.last
   end
 
   def have_highest_trump_in_game
     highest_trump == game.cards.in_play.first
+  end
+
+  def last_to_play?
+    [3, -1].include?(bid_order - game.tricks.last.cards_played.first.hand.bid_order)
+  end
+
+  def partner_winning?
+    game.tricks.last.leading_hand.bid_order % 2 == bid_order % 2
   end
 
   def highest_trump
@@ -75,10 +97,12 @@ class Hand < ActiveRecord::Base
     end
   end
 
-  def highest_in_game_for_suit(suit)
-    cards.non_trump.for_suit(suit).in_play.detect do |card|
-      card.highest_in_suit?
-    end
+  def highest_for_suit(suit)
+    cards.non_trump.for_suit(suit).in_play.first
+  end
+
+  def lowest_for_suit(suit)
+    cards.non_trump.for_suit(suit).in_play.last
   end
 
   def trump_count
