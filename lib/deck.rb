@@ -45,4 +45,19 @@ class Deck
     end
   end
 
+  def self.pictogram(suit)
+    case suit
+    when 'Hearts'
+      "♡"
+    when 'Diamonds'
+      "♢"
+    when 'Clubs'
+      "♧"
+    when 'Spades'
+      "♤"
+    when nil
+      "🃏"
+    end
+  end
+
 end

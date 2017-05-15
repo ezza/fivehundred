@@ -37,10 +37,11 @@ ActiveRecord::Schema.define(version: 20170509075751) do
 
   create_table "games", force: :cascade do |t|
     t.string   "trump_suit"
+    t.integer  "bid_winner_id"
     t.integer  "tricks_bid"
     t.integer  "tricks_won"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "hands", force: :cascade do |t|

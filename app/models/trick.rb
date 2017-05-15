@@ -1,5 +1,7 @@
 class Trick < ActiveRecord::Base
   has_many :cards
+  belongs_to :game
+  belongs_to :trick_winner, foreign_key: :won_by_hand_id, class_name: Hand
 
   def cards_played
     cards.order(:updated_at)
@@ -19,5 +21,15 @@ class Trick < ActiveRecord::Base
 
   def leading_hand
     cards.order(:strength).reverse.first.hand
+  end
+
+  def next_player_id
+    game.hands.find_by(
+      bid_order: (cards_played.last.hand.bid_order + 1) % 4
+    ).id
+  end
+
+  def last_player_order
+    cards_played.last.hand.bid_order
   end
 end

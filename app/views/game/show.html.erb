@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col-xs">
+    <div class="row-xs">
+      <div class="box"><strong>Current Trick</strong></div>
+    </div>
+    <% @current_trick_cards.each do |card| %>
+      <div class="row-xs">
+        <div class="box"><strong><%= card.try(:hand).try(:bid_order) %></strong> <%= card %>&nbsp;</div>
+      </div>
+    <% end %>
+    <div class="row-xs">
+      <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>&nbsp;
+    </div>
+  </div>
+  <div class="col-xs">
+    <div class="row-xs">
+      <div class="box"><strong><%= @game.trump_suit %></strong></div>
+    </div>
+    <div class="row-xs">
+      <div class="box">
+        <% @game.hands.each do |hand| %>
+          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? %>
+          <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
+        <% end %>
+      </div>
+      <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
+      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") unless @game.bid_winner %>
+    </div>
+  </div>
+  <div class="col-xs">
+    &nbsp;
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs">
+    &nbsp;
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs">
+
+  </div>
+  <div class="col-xs">
+
+  </div>
+  <div class="col-xs">
+
+  </div>
+  <div class="col-xs">
+    <div class="row-xs">
+      <div class="box">
+        <strong>Kitty</strong>
+          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") unless @game.bid_winner %>
+      </div>
+    </div>
+    <% @game.cards.unassigned.each do |card| %>
+      <div class="row-xs">
+        <div class="box"><%= card %></div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs">
+    &nbsp;
+  </div>
+</div>
+<div class="row">
+    <% @game.hands.each do |hand| %>
+    <div class="col-xs">
+      <div class="row-xs">
+        <div class="box">
+          <strong><%= hand.bid_order %></strong>
+          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? %>
+          <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
+        </div>
+      </div>
+      <div class="row-xs">
+        <div class="box"><strong>Bid: <%= hand.bids.last %></strong></div>
+      </div>
+      <div class="row-xs">
+        <div class="box"><strong>Tricks: <%= hand.won_tricks.size %></strong></div>
+      </div>
+      <% hand.cards.in_play.order('suit, strength DESC').each do |card| %>
+        <div class="row-xs">
+          <div class="box"><%= card %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

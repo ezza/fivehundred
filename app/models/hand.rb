@@ -2,9 +2,24 @@ class Hand < ActiveRecord::Base
   belongs_to :game
   has_many :cards
   has_many :bids
-  has_many :won_tricks, foreign_key: :won_by_hand_id
+  has_many :won_tricks, class_name: Trick, foreign_key: :won_by_hand_id
 
   delegate :trump_suit, to: :game
+
+  def can_bid?
+    game.next_bidder_id == id
+  end
+
+  def can_play?
+    false unless game.bid_winner
+    if game.tricks.count == 0
+      game.bid_winner == self
+    elsif !game.pending_trick?
+      game.tricks.last.trick_winner == self
+    elsif game.tricks.last.cards_played.size < 4
+      game.tricks.last.next_player_id == id
+    end
+  end
 
   def make_bid
     strongest = strongest_suit
@@ -26,6 +41,14 @@ class Hand < ActiveRecord::Base
   def choose_kitty
     cards.by_strength.last(3).each do |card|
       card.update_attributes!(hand: nil)
+    end
+  end
+
+  def play
+    if game.pending_trick?
+      follow
+    else
+      lead
     end
   end
 

@@ -5,7 +5,7 @@ class Bid < ActiveRecord::Base
 #  after_create :check_game_status
 
   def self.active
-    where.not(suit: 'Pass')
+    where.not(suit: 'Pass').order(:id)
   end
 
   def self.inactive
@@ -18,6 +18,10 @@ class Bid < ActiveRecord::Base
 
   def trick_score
     (tricks - 6) * 100
+  end
+
+  def to_s
+    "#{tricks} #{suit}"
   end
 
   protected

@@ -3,6 +3,8 @@ class Card < ActiveRecord::Base
   belongs_to :game
   belongs_to :trick
 
+  before_save :set_strength
+
   def self.unassigned
     where(hand: nil)
   end
@@ -48,10 +50,10 @@ class Card < ActiveRecord::Base
   end
 
   def set_strength
-    update_attributes(strength: calculate_strength(game.trump_suit)) if game.trump_suit
+    self.strength = calculate_strength(game.try(:trump_suit))
   end
 
-  def calculate_strength(trump_suit)
+  def calculate_strength(trump_suit = nil)
     value + case
     when suit == trump_suit && rank == "Jack"
       20
@@ -82,6 +84,6 @@ class Card < ActiveRecord::Base
   end
 
   def to_s
-    "#{rank} of #{suit}"
+    "#{Deck.pictogram(suit)} " + [rank, suit].compact.join(' of ')
   end
 end
