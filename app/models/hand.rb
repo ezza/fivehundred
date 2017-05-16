@@ -204,7 +204,10 @@ class Hand < ActiveRecord::Base
 
   def internal_strength(suit)
     bower_count(suit) +
-    non_bower_count(suit).to_f/2 +
+    non_bower_count(suit).to_f * 0.5 +
+    trump_count_for(suit, "ace").to_f * 0.3 +
+    trump_count_for(suit, "king").to_f * 0.2 +
+    trump_count_for(suit, "queen").to_f * 0.1 +
     non_trump_ace_count(suit) +
     cards.where(rank: 'Joker').size
   end
@@ -215,6 +218,10 @@ class Hand < ActiveRecord::Base
 
   def bower_count(suit)
     cards.where(rank: 'Jack').where("suit = ? or suit = ?", suit, Deck.match(suit)).size
+  end
+
+  def trump_count_for(suit, rank)
+    cards.where(rank: rank).where(suit: suit).size
   end
 
   def non_trump_ace_count(suit)

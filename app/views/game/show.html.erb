@@ -81,7 +81,7 @@
       <div class="row-xs">
         <div class="box"><strong>Tricks: <%= hand.won_tricks.size %></strong></div>
       </div>
-      <% hand.cards.in_play.order('suit, strength DESC').each do |card| %>
+      <% hand.cards.in_play_unordered.order('suit, strength DESC').each do |card| %>
         <div class="row-xs">
           <div class="box"><%= card %></div>
         </div>

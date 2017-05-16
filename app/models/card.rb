@@ -14,7 +14,11 @@ class Card < ActiveRecord::Base
   end
 
   def self.in_play
-    where(trick: nil).where.not(hand: nil).by_strength
+    in_play_unordered.by_strength
+  end
+
+  def self.in_play_unordered
+    where(trick: nil).where.not(hand: nil)
   end
 
   def self.trump
