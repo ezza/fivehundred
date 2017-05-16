@@ -24,7 +24,7 @@
         <% end %>
       </div>
       <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
-      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") unless @game.bid_winner %>
+      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.bidding_complete? && !@game.bid_winner %>
     </div>
   </div>
   <div class="col-xs">
@@ -50,7 +50,7 @@
     <div class="row-xs">
       <div class="box">
         <strong>Kitty</strong>
-          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") unless @game.bid_winner %>
+          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.bidding_complete? && !@game.bid_winner %>
       </div>
     </div>
     <% @game.cards.unassigned.each do |card| %>
