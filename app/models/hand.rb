@@ -28,7 +28,7 @@ class Hand < ActiveRecord::Base
     bid = bids.new(suit: strongest, tricks: 6)
     while bid.score <= highest_bid.try(:score).to_i
       bid.tricks += 1
-      strength -= 0.5
+      strength -= 1
     end
 
     unless strength > 2

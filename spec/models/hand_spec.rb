@@ -161,6 +161,28 @@ RSpec.describe Hand, type: :model do
       })
     end
 
+    describe "following a bid of 7 hearts" do
+      before do
+        @hand_two = @game.hands.create!(bid_order: 2)
+        @hand_two.bids.create(suit: 'Hearts', tricks: 7)
+      end
+
+      it "passes with a black hand" do
+        create_card(rank: 'Jack', suit: "Clubs")
+        create_card(rank: 'Ace', suit: "Spades")
+        create_card(rank: 10, suit: "Spades")
+        create_card(rank: 9, suit: "Spades")
+        create_card(rank: 'Ace', suit: "Diamonds")
+        @hand.make_bid
+
+        expect(
+          @hand.bids.last.attributes.symbolize_keys.slice(:suit, :tricks)
+        ).to eq({
+          suit: 'Pass', tricks: 0
+        })
+      end
+    end
+
     describe "with a partner bid of 6 clubs" do
       before do
         @hand.bids.create(suit: 'Clubs', tricks: 6)
