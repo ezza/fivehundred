@@ -1,7 +1,6 @@
 
 
   #   TODO
-
   #       Build the UI around a game so it's possible for 1 or 2 people to play against AI
   #       - Controllers and views to see the game
   #       - Connections so all the bits talk to each other
