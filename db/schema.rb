@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 20170517041534) do
 
   create_table "hands", force: :cascade do |t|
     t.integer  "game_id"
+    t.integer  "user_id"
     t.integer  "bid_order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

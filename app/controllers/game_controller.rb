@@ -6,7 +6,12 @@ class GameController < ApplicationController
   end
 
   def create
-    game = Game.create.tap &:deal
+    game = Game.create
+    redirect_to(game)
+  end
+
+  def deal
+    game.deal
     redirect_to(game)
   end
 

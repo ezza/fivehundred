@@ -4,10 +4,27 @@ class Hand < ActiveRecord::Base
   has_many :bids
   has_many :won_tricks, class_name: Trick, foreign_key: :won_by_hand_id
 
+  belongs_to :user
+
   delegate :trump_suit, to: :game
 
+  AI_NAMES = [
+    'Lucille',
+    'Mimi',
+    'Standford',
+    'Doyle'
+  ]
+
+  def name
+    if user
+      user.email
+    else
+      AI_NAMES[bid_order]
+    end
+  end
+
   def can_bid?
-    game.next_bidder_id == id
+    game.cards.any? && game.next_bidder_id == id
   end
 
   def can_play?

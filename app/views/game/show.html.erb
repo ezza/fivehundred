@@ -23,6 +23,7 @@
           <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
         <% end %>
       </div>
+      <%= link_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
       <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
       <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.bidding_complete? && !@game.bid_winner %>
     </div>
@@ -70,7 +71,7 @@
     <div class="col-xs">
       <div class="row-xs">
         <div class="box">
-          <strong><%= hand.bid_order %></strong>
+          <strong><%= hand.name %></strong>
           <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? %>
           <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
         </div>

@@ -6,13 +6,20 @@ class Game < ActiveRecord::Base
   has_one :kitty
   belongs_to :bid_winner, foreign_key: :bid_winner_id, class_name: Hand
 
+  def self.create
+    game = super
+    4.times do |i|
+      hand = game.hands.new
+      hand.bid_order = i
+      hand.save!
+    end
+    game
+  end
+
   def deal
     deck = Deck.cards.shuffle
 
-    4.times do |i|
-      hand = hands.new
-      hand.bid_order = i
-      hand.save!
+    hands.each do |hand|
       10.times do
         hand.cards.create!(deck.pop.merge(game: self))
       end
@@ -51,6 +58,10 @@ class Game < ActiveRecord::Base
     tricks.last &&
     !tricks.last.won_by_hand_id &&
     tricks.last.cards_played.size >= 4
+  end
+
+  def can_deal?
+    cards.size == 0
   end
 
   def current_trick_cards
