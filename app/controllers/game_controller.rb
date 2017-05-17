@@ -4,11 +4,13 @@ class GameController < ApplicationController
   before_filter :set_game, except: [:index, :create]
 
   def index
-    @available_games = Game.where(started: false).all
+    @available_games = Game.where(started: false).all.reject { |g| g.hands.any?{ |h| h.user == current_user } }
+    @hands = current_user.hands.joins(:game).where("not games.started").all
   end
 
   def create
     @game = Game.create
+    @game.join(current_user)
     redirect_to(@game)
   end
 

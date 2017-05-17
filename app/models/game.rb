@@ -16,10 +16,6 @@ class Game < ActiveRecord::Base
     game
   end
 
-  def self.pending
-    where("cards.id is null").joins(:cards)
-  end
-
   def join(user)
     [hands[0], hands[2], hands[1], hands[3]].detect do |hand|
       hand.user.nil?
@@ -38,6 +34,8 @@ class Game < ActiveRecord::Base
     deck.each do |card|
       self.cards.create!(card)
     end
+
+    update_attributes!(started: true)
   end
 
   def award_bid
