@@ -16,7 +16,8 @@ class GameController < ApplicationController
 
   def deal
     @game.deal
-    redirect_to(@game)
+
+    perform_ai_actions_and_redirect
   end
 
   def join
@@ -32,16 +33,26 @@ class GameController < ApplicationController
   def award_bid
     @game.award_bid
 
-    redirect_to @game
+    perform_ai_actions_and_redirect
   end
 
   def award_trick
     @game.award_trick
 
-    redirect_to @game
+    perform_ai_actions_and_redirect
   end
+
+  protected
 
   def set_game
     @game = Game.find params[:id]
+  end
+
+  def perform_ai_actions_and_redirect
+    10.times do
+      @game.perform_ai_action if @game.next_action_ai?
+    end if @game.hands.any? { |hand| hand.user }
+
+    redirect_to @game
   end
 end

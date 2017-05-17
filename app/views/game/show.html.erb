@@ -1,5 +1,5 @@
 <% unless current_user.email == 'admin@example.com' || (@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? )) %>
-  <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id%>">
+  <meta http-equiv="refresh" content="5; URL=/game/<%= @game.id%>">
 <% end %>
 
 <div class="row">
@@ -10,7 +10,7 @@
 <div class="row">
   <div class="col-xs">
     <div class="row-xs">
-      <div class="box">Current Trick</div>
+      &nbsp;
     </div>
     <% @current_trick_cards.each do |card| %>
       <div class="row-xs">
@@ -20,7 +20,7 @@
   </div>
   <div class="col-xs">
     <div class="row-xs">
-      &nbsp;
+      <div class="box">Current Trick</div>
     </div>
     <% @current_trick_cards.each do |card| %>
       <div class="row-xs">
@@ -30,7 +30,6 @@
   </div>
   <div class="col-xs">
     <div class="row-xs">
-      <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>&nbsp;
     </div>
   </div>
   <div class="col-xs">
@@ -38,18 +37,21 @@
       <div class="box"><strong><%= @game.trump_suit %></strong></div>
     </div>
     <% if current_user.email == 'admin@example.com' %>
-    <div class="row-xs">
-      <div class="box">
-        <% @game.hands.each do |hand| %>
-          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
-          <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
-        <% end %>
+      <div class="row-xs">
+        <div class="box">
+          <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>&nbsp;
+          <% @game.hands.each do |hand| %>
+            <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
+            <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
+          <% end %>
+        </div>
       </div>
+    <% end %>
+    <div class="row-xs">
       <%= link_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
       <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
-      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.bidding_complete? && !@game.bid_winner %>
+      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
     </div>
-    <% end %>
   </div>
 </div>
 <div class="row">
@@ -71,7 +73,7 @@
     <div class="row-xs">
       <div class="box">
         <strong>Kitty</strong>
-          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.bidding_complete? && !@game.bid_winner && current_user.email == 'admin@example.com'%>
+          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? && current_user.email == 'admin@example.com'%>
       </div>
     </div>
     <% if @game.bid_winner == current_user || current_user.email == 'admin@example.com' %>
@@ -96,7 +98,7 @@
           <strong><%= hand.name %></strong>
         </div>
       </div>
-      <% if hand.user == current_user || current_user.email == 'admin@example.com' %>
+      <% if current_user.email == 'admin@example.com' %>
         <div class="row-xs">
           <div class="box">
             <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
@@ -122,7 +124,11 @@
         <% hand.cards.in_play_unordered.order('suit, strength DESC').each do |card| %>
           <div class="row-xs">
             <div class="box"><%= card %></div>
-            <div class="box"><%= link_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %></div>
+            <% if hand.cards.size > 10 %>
+              <div class="box"><%= link_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %></div>
+            <% else %>
+              <div class="box"><%= link_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %></div>
+            <% end %>
           </div>
         <% end %>
       <% end %>

@@ -16,6 +16,27 @@ class Game < ActiveRecord::Base
     game
   end
 
+  def next_action_ai?
+    can_award_trick? ||
+    can_award_bid? ||
+    hands.detect do |hand|
+      next if hand.user
+      hand.can_bid? || hand.can_play?
+    end
+  end
+
+  def perform_ai_action
+    award_trick if can_award_trick?
+    award_bid if can_award_bid?
+
+    hands.each do |hand|
+      next if hand.user
+
+      hand.make_bid if hand.can_bid?
+      hand.play if hand.can_play?
+    end
+  end
+
   def join(user)
     [hands[0], hands[2], hands[1], hands[3]].detect do |hand|
       hand.user.nil?
@@ -53,7 +74,12 @@ class Game < ActiveRecord::Base
 
     set_card_strength
 
-    winning_bid.hand.choose_kitty
+    winning_bid.hand.choose_kitty unless winning_bid.hand.user
+  end
+
+  def can_award_bid?
+    bidding_complete? &&
+    !bid_winner
   end
 
   def award_trick
@@ -89,7 +115,8 @@ class Game < ActiveRecord::Base
   end
 
   def bidding_complete?
-    bids.inactive.size >= 3
+    bids.inactive.size >= 3 &&
+    bids.active.size == 1
   end
 
   def pending_trick?
@@ -112,6 +139,8 @@ class Game < ActiveRecord::Base
     elsif bids.active.any?
       index = bidders.index(bids.active.last.hand_id) + 1
       bidders[index % bidders.length]
+    elsif bids.inactive.any?
+      bidders.first
     else
       hands.first.id
     end

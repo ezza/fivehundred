@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   get 'game/:id/award_trick' => 'game#award_trick'
   get 'hand/:hand_id/make_bid', to: 'hand#make_bid'
   get 'hand/:hand_id/play', to: 'hand#play'
+  get 'hand/:hand_id/discard', to: 'hand#discard'
 
   resources :game
 

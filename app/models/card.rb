@@ -51,7 +51,7 @@ class Card < ActiveRecord::Base
       is_trump || hand.no_trumps?
     else
       (!is_trump && suit == game.tricks.last.suit_lead) ||
-      hand.cant_follow_suit?(suit)
+      hand.cant_follow_suit?(game.tricks.last.suit_lead)
     end
   end
 

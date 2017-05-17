@@ -8,6 +8,7 @@
   #       - Allow players to choose which cards to discard
   #       - Allow players to choose which card to play
   #       - Score a hand when it finishes and deal the next hand
+  #       - AI bids over its partner when it doesn't need to to win the trick
 
 
   # / TODO /

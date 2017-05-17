@@ -82,6 +82,11 @@ class Hand < ActiveRecord::Base
     end
   end
 
+  def discard(suit: nil, rank: nil)
+    card = cards.find_by(suit: suit, rank: rank)
+    card.update_attributes!(hand: nil)
+  end
+
   def ai_play
     if game.pending_trick?
       follow
@@ -161,7 +166,7 @@ class Hand < ActiveRecord::Base
   end
 
   def highest_trump
-    cards.in_play.first
+    cards.trump.in_play.first
   end
 
   def highest_in_game_for_a_suit
