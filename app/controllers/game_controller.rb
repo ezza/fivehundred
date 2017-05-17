@@ -26,6 +26,7 @@ class GameController < ApplicationController
 
   def show
     @current_trick_cards = Array.new(4) { |i| (@game.current_trick_cards || [])[i] }
+    @player_hand = @game.hands.where(user: current_user).first
   end
 
   def award_bid

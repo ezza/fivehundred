@@ -17,7 +17,11 @@ class Hand < ActiveRecord::Base
 
   def name
     if user
-      user.email.split('@')[0]
+      if user.email == 'admin@example.com'
+        'Giles'
+      else
+        user.email.split('@')[0]
+      end
     else
       AI_NAMES[bid_order]
     end
@@ -25,17 +29,6 @@ class Hand < ActiveRecord::Base
 
   def can_bid?
     game.cards.any? && game.next_bidder_id == id
-  end
-
-  def can_play?
-    false unless game.bid_winner
-    if game.tricks.count == 0
-      game.bid_winner == self
-    elsif !game.pending_trick?
-      game.tricks.last.trick_winner == self
-    elsif game.tricks.last.cards_played.size < 4
-      game.tricks.last.next_player_id == id
-    end
   end
 
   def make_bid(bid = nil)
@@ -66,19 +59,43 @@ class Hand < ActiveRecord::Base
     bid.save
   end
 
-  def choose_kitty
-    cards.by_strength.last(3).each do |card|
-      card.update_attributes!(hand: nil)
+  def can_play?
+    false unless game.bid_winner
+    if game.tricks.count == 0
+      game.bid_winner == self
+    elsif !game.pending_trick?
+      game.tricks.last.trick_winner == self
+    elsif game.tricks.last.cards_played.size < 4
+      game.tricks.last.next_player_id == id
     end
   end
 
-  def play
+  def play(suit: nil, rank: nil)
+    return ai_play unless suit && rank
+
+    card = cards.find_by(suit: suit, rank: rank)
+
+    if game.pending_trick?
+      card.play
+    else
+      card.lead
+    end
+  end
+
+  def ai_play
     if game.pending_trick?
       follow
     else
       lead
     end
   end
+
+  def choose_kitty
+    cards.by_strength.last(3).each do |card|
+      card.update_attributes!(hand: nil)
+    end
+  end
+
 
   def lead
     if have_highest_trump_in_game

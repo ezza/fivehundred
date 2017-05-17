@@ -7,7 +7,7 @@ class HandController < ApplicationController
   end
 
   def play
-    hand.play
+    hand.play(suit: params[:suit], rank: params[:rank])
 
     redirect_to(hand.game)
   end

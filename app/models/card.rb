@@ -42,7 +42,17 @@ class Card < ActiveRecord::Base
   end
 
   def play
-    update_attributes!(trick: game.tricks.last)
+    update_attributes!(trick: game.tricks.last) if can_play?
+  end
+
+  def can_play?
+    return true unless game.pending_trick?
+    if game.tricks.last.card_lead.is_trump
+      is_trump || hand.no_trumps?
+    else
+      (!is_trump && suit == game.tricks.last.suit_lead) ||
+      hand.cant_follow_suit?(suit)
+    end
   end
 
   def highest_in_suit?
