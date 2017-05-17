@@ -20,7 +20,11 @@ class Trick < ActiveRecord::Base
   end
 
   def leading_hand
-    cards.order(:strength).reverse.first.hand
+    if cards.any? &:is_trump
+      cards
+    else
+      cards.for_suit(suit_lead)
+    end.order(:strength).reverse.first.hand
   end
 
   def next_player_id

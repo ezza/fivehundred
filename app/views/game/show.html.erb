@@ -9,47 +9,51 @@
 </div>
 <div class="row">
   <div class="col-xs">
-    <div class="row-xs">
-      &nbsp;
-    </div>
-    <% @current_trick_cards.each do |card| %>
-      <div class="row-xs">
-        <div class="box"><strong><%= card.try(:hand).try(:name) %></strong>&nbsp;</div>
-      </div>
-    <% end %>
+    <div class="box">Trumps: <strong><%= @game.trump_suit %></strong></div>
   </div>
+</div>
+<div class="row">
   <div class="col-xs">
-    <div class="row-xs">
+    <div class="row-s">
       <div class="box">Current Trick</div>
     </div>
     <% @current_trick_cards.each do |card| %>
+
       <div class="row-xs">
-        <div class="box"><%= card %>&nbsp;</div>
+        <div class="box">
+          <% if card && card.hand == card.trick.leading_hand %><strong><% end %>
+            <%= card %>
+          <% if card %></strong><% end %>
+          <% if card %>
+            (<%= card.try(:hand).try(:name) %>)
+          <% end %>
+          &nbsp;
+        </div>
       </div>
     <% end %>
   </div>
   <div class="col-xs">
-    <div class="row-xs">
+    <div class="row-s">
       <div class="box">Last Trick</div>
     </div>
     <% @last_trick_cards.each do |card| %>
       <div class="row-xs">
-        <div class="box"><%= card %>&nbsp;</div>
+        <div class="box">
+          <% if card && card.hand == card.trick.leading_hand %><strong><% end %>
+            <%= card %>
+          <% if card %></strong><% end %>
+          <% if card %>
+            (<%= card.try(:hand).try(:name) %>)
+          <% end %>
+          &nbsp;
+        </div>
       </div>
     <% end %>
   </div>
   <div class="col-xs">
-    <div class="row-xs">
-    </div>
-  </div>
-  <div class="col-xs">
-    <div class="row-xs">
-      <div class="box"><strong><%= @game.trump_suit %></strong></div>
-    </div>
     <% if current_user.email == 'admin@example.com' %>
       <div class="row-xs">
         <div class="box">
-          <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>&nbsp;
           <% @game.hands.each do |hand| %>
             <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
             <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
@@ -105,7 +109,9 @@
     <div class="col-xs">
       <div class="row-xs">
         <div class="box">
-          <strong><%= hand.name %></strong>
+          <% if hand.user == current_user %><strong><% end %>
+            <%= hand.name %>
+          <% if hand.user == current_user %></strong><% end %>
         </div>
       </div>
       <% if current_user.email == 'admin@example.com' %>
@@ -131,7 +137,7 @@
         <div class="box"><strong>Tricks: <%= hand.won_tricks.size %></strong></div>
       </div>
       <% if hand.user == current_user || current_user.email == 'admin@example.com' %>
-        <% hand.cards.in_play_unordered.order('suit, strength DESC').each do |card| %>
+        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %>
           <div class="row-xs">
             <div class="box"><%= card %></div>
             <% if hand.cards.size > 10 %>

@@ -73,6 +73,8 @@ class Hand < ActiveRecord::Base
   def play(suit: nil, rank: nil)
     return ai_play unless suit && rank
 
+    suit = nil if suit.blank?
+
     card = cards.find_by(suit: suit, rank: rank)
 
     if game.pending_trick?
