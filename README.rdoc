@@ -1,14 +1,9 @@
 
 
   #   TODO
-  #       - Autoplay the next move if game has human players and move is AI
   #       - Validations so it is not possible to reneg
   #       - Move the bidding and playing AIs out of the hand model
-  #       - Improve the kitty logic so it attempts to short suit
-  #       - Allow players to choose which cards to discard
-  #       - Allow players to choose which card to play
   #       - Score a hand when it finishes and deal the next hand
   #       - AI bids over its partner when it doesn't need to to win the trick
-
-
+  #       - AI leads trumps after it knows only it and it's partner have trumps left
   # / TODO /
