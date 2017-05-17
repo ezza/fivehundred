@@ -1,5 +1,5 @@
 <% unless current_user.email == 'admin@example.com' || (@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? )) %>
-  <meta http-equiv="refresh" content="5; URL=/game/<%= @game.id%>">
+  <meta http-equiv="refresh" content="5">
 <% end %>
 
 <div class="row">
@@ -23,6 +23,16 @@
       <div class="box">Current Trick</div>
     </div>
     <% @current_trick_cards.each do |card| %>
+      <div class="row-xs">
+        <div class="box"><%= card %>&nbsp;</div>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-xs">
+    <div class="row-xs">
+      <div class="box">Last Trick</div>
+    </div>
+    <% @last_trick_cards.each do |card| %>
       <div class="row-xs">
         <div class="box"><%= card %>&nbsp;</div>
       </div>

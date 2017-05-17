@@ -166,7 +166,7 @@ class Hand < ActiveRecord::Base
   end
 
   def highest_trump
-    cards.trump.in_play.first
+    cards.in_play.first
   end
 
   def highest_in_game_for_a_suit

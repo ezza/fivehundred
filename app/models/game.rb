@@ -98,6 +98,14 @@ class Game < ActiveRecord::Base
     cards.size == 0
   end
 
+  def last_trick_cards
+    if completed_trick?
+      completed_trick.cards_played
+    else
+      []
+    end
+  end
+
   def current_trick_cards
     if pending_trick?
       tricks.last.cards_played
@@ -116,11 +124,15 @@ class Game < ActiveRecord::Base
 
   def bidding_complete?
     bids.inactive.size >= 3 &&
-    bids.active.size == 1
+    bids.active.size >= 1
   end
 
   def pending_trick?
-    tricks.last && !tricks.last.try(:won_by_hand_id) #&& tricks.last.cards_played.size < 4
+    tricks.last && !completed_trick? #&& tricks.last.cards_played.size < 4
+  end
+
+  def completed_trick?
+    tricks.where.not(won_by_hand_id: nil).last
   end
 
   def set_card_strength
