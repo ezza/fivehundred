@@ -17,7 +17,7 @@ class Hand < ActiveRecord::Base
 
   def name
     if user
-      user.email
+      user.email.split('@')[0]
     else
       AI_NAMES[bid_order]
     end
@@ -38,12 +38,23 @@ class Hand < ActiveRecord::Base
     end
   end
 
-  def make_bid
+  def make_bid(bid = nil)
+    return ai_bid unless bid
+
+    if bid == "Pass"
+      bids.new(suit: "Pass", tricks: 0)
+    else
+      tricks, suit = bid.split(' ')
+      bids.new(suit: suit, tricks: tricks)
+    end.save
+  end
+
+  def ai_bid
     strongest = strongest_suit
     strength = strength(strongest_suit)
 
     bid = bids.new(suit: strongest, tricks: 6)
-    while bid.score <= highest_bid.try(:score).to_i
+    while bid.score <= game.highest_bid.try(:score).to_i
       bid.tricks += 1
       strength -= 1
     end
@@ -182,10 +193,6 @@ class Hand < ActiveRecord::Base
 
   def worst_card
     cards.non_trump.in_play.where(suit: shortest_suit).last || cards.in_play.last
-  end
-
-  def highest_bid
-    game.bids.active.last
   end
 
   def highest_partner_bid

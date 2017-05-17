@@ -80,6 +80,14 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def available_bids
+    Deck.bids_above(highest_bid.try(:score).to_i)
+  end
+
+  def highest_bid
+    bids.active.last
+  end
+
   def bidding_complete?
     bids.inactive.size >= 3
   end

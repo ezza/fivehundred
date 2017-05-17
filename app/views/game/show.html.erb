@@ -24,7 +24,7 @@
     <div class="row-xs">
       <div class="box">
         <% @game.hands.each do |hand| %>
-          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? %>
+          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
           <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
         <% end %>
       </div>
@@ -77,12 +77,20 @@
       <div class="row-xs">
         <div class="box">
           <strong><%= hand.name %></strong>
-          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? %>
+          <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.nil? %>
           <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
         </div>
       </div>
       <div class="row-xs">
-        <div class="box"><strong>Bid: <%= hand.bids.last %></strong></div>
+        <% if hand.can_bid? && hand.user.present? %>
+          <%= form_tag("/hand/#{hand.id}/make_bid", method: "get") do %>
+            <%= label_tag(:bid, "Bid:") %>
+            <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
+            <%= submit_tag("Place Bid") %>
+          <% end %>
+        <% else %>
+          <div class="box"><strong>Bid: <%= hand.bids.last %></strong></div>
+        <% end %>
       </div>
       <div class="row-xs">
         <div class="box"><strong>Tricks: <%= hand.won_tricks.size %></strong></div>

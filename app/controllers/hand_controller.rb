@@ -1,7 +1,7 @@
 class HandController < ApplicationController
 
   def make_bid
-    hand.make_bid
+    hand.make_bid params[:bid]
 
     redirect_to(hand.game)
   end

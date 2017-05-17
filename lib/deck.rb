@@ -60,4 +60,23 @@ class Deck
     end
   end
 
+  def self.bids_above(current_bid)
+    ['Pass'] + bids[1..-1].map do |bid|
+      bid unless points(bid) <= current_bid
+    end.compact
+  end
+
+  def self.bids
+    (6..10).map do |tricks|
+      SUITS.reverse.map do |suit|
+        "#{tricks} #{suit}"
+      end
+    end.flatten
+  end
+
+  def self.points(bid)
+    tricks, suit = bid.split ' '
+    value(suit) + (tricks.to_i-6) * 100
+  end
+
 end
