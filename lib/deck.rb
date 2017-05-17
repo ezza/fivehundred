@@ -61,7 +61,7 @@ class Deck
   end
 
   def self.bids_above(current_bid)
-    ['Pass'] + bids[1..-1].map do |bid|
+    ['Pass'] + bids.map do |bid|
       bid unless points(bid) <= current_bid
     end.compact
   end
