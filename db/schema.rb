@@ -40,8 +40,9 @@ ActiveRecord::Schema.define(version: 20170517041534) do
     t.integer  "bid_winner_id"
     t.integer  "tricks_bid"
     t.integer  "tricks_won"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.boolean  "started",       default: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   create_table "hands", force: :cascade do |t|

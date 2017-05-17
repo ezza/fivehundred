@@ -16,6 +16,16 @@ class Game < ActiveRecord::Base
     game
   end
 
+  def self.pending
+    where("cards.id is null").joins(:cards)
+  end
+
+  def join(user)
+    [hands[0], hands[2], hands[1], hands[3]].detect do |hand|
+      hand.user.nil?
+    end.update_attributes(user: user)
+  end
+
   def deal
     deck = Deck.cards.shuffle
 

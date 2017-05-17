@@ -5,6 +5,7 @@ class CreateGames < ActiveRecord::Migration
       t.integer :bid_winner_id
       t.integer :tricks_bid
       t.integer :tricks_won
+      t.boolean :started, default: false
 
       t.timestamps null: false
     end

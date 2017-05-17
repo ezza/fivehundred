@@ -1,8 +1,16 @@
 <% if user_signed_in? %>
   <p>Hi <%= current_user.email %>
+    <% @available_games.each do |game| %>
+      <p>Game <%= game.id %>
+        <% if game.hands.any? { |hand| hand.user == current_user } %>
+          <%= link_to('resume', { controller: :game, id: game.id, action: :show }) %></p>
+        <% else %>
+          <%= link_to('join', { controller: :game, id: game.id, action: :join }) %></p>
+        <% end %>
+    <% end %>
 
-    <li>
-  <%= link_to('New Game', 'create_game') %>
+  <li>
+    <%= link_to('New Game', 'create_game') %>
   </li>
   <li>
   <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
