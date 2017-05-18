@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20170517041534) do
     t.integer  "tricks_bid"
     t.integer  "tricks_won"
     t.boolean  "started",       default: false
+    t.boolean  "played",        default: false
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
   end
