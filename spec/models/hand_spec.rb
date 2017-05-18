@@ -12,7 +12,7 @@ RSpec.describe Hand, type: :model do
     card
   end
 
-  describe "Hearts hand" do
+  describe "Suit order" do
     before do
       create_card(rank: 'Jack', suit: "Diamonds")
       create_card(rank: 'Ace', suit: "Hearts")
