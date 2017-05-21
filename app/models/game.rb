@@ -4,23 +4,25 @@ class Game < ActiveRecord::Base
   has_many :cards
   has_many :tricks
   has_one :kitty
+
+  belongs_to :match
   belongs_to :bid_winner, foreign_key: :bid_winner_id, class_name: Hand
 
-  def self.create
-    game = super
+  after_create :create_hands
+
+  def create_hands
     4.times do |i|
-      hand = game.hands.new
-      hand.bid_order = i
-      hand.save!
+      hands.create(bid_order: i)
     end
-    game
   end
 
   def next_action_ai?
+    return false if can_award_game?
+
     can_award_trick? ||
     can_award_bid? ||
     hands.detect do |hand|
-      next if hand.user
+      next unless hand.user.is_ai?
       hand.can_bid? || hand.can_play?
     end
   end
@@ -30,20 +32,20 @@ class Game < ActiveRecord::Base
     award_bid if can_award_bid?
 
     hands.each do |hand|
-      next if hand.user
+      next unless hand.user.is_ai?
 
       hand.make_bid if hand.can_bid?
       hand.play if hand.can_play?
     end
   end
 
-  def join(user)
-    [hands[0], hands[2], hands[1], hands[3]].detect do |hand|
-      hand.user.nil?
-    end.update_attributes(user: user)
-  end
-
   def deal
+    hands.where(user: nil).each_with_index do |hand, i|
+      user = User.where(is_ai: true).offset(i).first
+      hand.update_attributes(user: user)
+      match.users << user
+    end
+
     deck = Deck.cards.shuffle
 
     hands.each do |hand|
@@ -74,7 +76,7 @@ class Game < ActiveRecord::Base
 
     set_card_strength
 
-    winning_bid.hand.choose_kitty unless winning_bid.hand.user
+    winning_bid.hand.choose_kitty if winning_bid.hand.user.is_ai?
   end
 
   def can_award_bid?
@@ -92,6 +94,42 @@ class Game < ActiveRecord::Base
     tricks.last &&
     !tricks.last.won_by_hand_id &&
     tricks.last.cards_played.size >= 4
+  end
+
+  def score_game
+    trick_count = bid_winner.won_tricks.size + bid_winner.partner.won_tricks.size
+
+    if trick_count >= highest_bid.tricks
+      score = highest_bid.score
+    else
+      score = 0 - highest_bid.score
+    end
+
+    hands.each do |hand|
+      match_user = match.match_users.find_by(user: hand.user)
+      if [bid_winner, bid_winner.partner].include? hand
+        match_user.score += score
+      else
+        match_user.score += (10 - trick_count) * 10
+      end
+      match_user.save
+    end
+  end
+
+  def award_game
+    return unless can_award_game?
+
+    score_game
+
+    match.games.create.tap do |game|
+      game.hands.each do |hand|
+        hand.update_attributes(user: hands.find_by(bid_order: (hand.bid_order + 1) % 4).user)
+      end
+    end
+  end
+
+  def can_award_game?
+    tricks.where.not(trick_winner: nil).size > 9
   end
 
   def can_deal?

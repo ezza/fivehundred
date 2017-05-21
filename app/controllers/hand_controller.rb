@@ -27,7 +27,7 @@ class HandController < ApplicationController
   def perform_ai_actions_and_redirect
     10.times do
       hand.game.perform_ai_action if hand.game.reload.next_action_ai?
-    end if hand.game.hands.any? { |hand| hand.user }
+    end unless hand.game.hands.all? { |hand| hand.user.is_ai? }
 
     redirect_to hand.game
   end

@@ -5,4 +5,6 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   has_many :hands
+  has_many :match_users
+  has_many :matches, through: :match_users
 end

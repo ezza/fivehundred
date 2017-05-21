@@ -8,13 +8,6 @@ class Hand < ActiveRecord::Base
 
   delegate :trump_suit, to: :game
 
-  AI_NAMES = [
-    'Lucille',
-    'Mimi',
-    'Standford',
-    'Doyle'
-  ]
-
   def name
     if user
       if user.email == 'admin@example.com'
@@ -22,9 +15,11 @@ class Hand < ActiveRecord::Base
       else
         user.email.split('@')[0]
       end
-    else
-      AI_NAMES[bid_order]
     end
+  end
+
+  def match_user
+    game.match.match_users.find_by(user: user)
   end
 
   def can_bid?
@@ -228,7 +223,7 @@ class Hand < ActiveRecord::Base
   end
 
   def partner
-    game.hands.where(bid_order:
+    game.hands.find_by(bid_order:
       (bid_order + 2) % 4
     )
   end

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get 'game/:id/deal' => 'game#deal'
   get 'game/:id/award_bid' => 'game#award_bid'
   get 'game/:id/award_trick' => 'game#award_trick'
+  get 'game/:id/award_game' => 'game#award_game'
   get 'hand/:hand_id/make_bid', to: 'hand#make_bid'
   get 'hand/:hand_id/play', to: 'hand#play'
   get 'hand/:hand_id/discard', to: 'hand#discard'

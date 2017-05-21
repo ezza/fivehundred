@@ -1,8 +1,11 @@
 class CreateGames < ActiveRecord::Migration
   def change
     create_table :games do |t|
-      t.string :trump_suit
+      t.references :match
+
       t.integer :bid_winner_id
+
+      t.string :trump_suit
       t.integer :tricks_bid
       t.integer :tricks_won
       t.boolean :started, default: false

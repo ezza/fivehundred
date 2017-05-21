@@ -5,3 +5,12 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+  [
+    'Lucille',
+    'Mimi',
+    'Standford',
+    'Doyle'
+  ].each do |name|
+    User.create! email: "#{name}@example.ai", is_ai: true, password: SecureRandom.base64
+  end
