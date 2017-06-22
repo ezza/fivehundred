@@ -1,6 +1,6 @@
 <% if @game.match.games.last != @game %>
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.match.games.last.id %>">
-<% elsif @game.can_award_game? || (current_user.email != 'admin@example.com' && !(@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? ))) %>
+<% elsif !@game.can_award_game? || (current_user.email != 'admin@example.com' && !(@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? ))) %>
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id %>">
 <% end %>
 
@@ -43,14 +43,12 @@
     <% @last_trick_cards.each do |card| %>
       <div class="row-xs">
         <div class="box">
-          <% if card && card.hand == card.trick.leading_hand %><strong><% end %>
-            <%= card %>
-          <% if card %></strong><% end %>
-          <% if card %>
-            (<%= card.try(:hand).try(:name) %>)
-          <% end %>
-          &nbsp;
-        </div>
+          <img class="card card-<%= card.rank %>-<%= card.suit %>">
+          <p>
+            <% if card %>
+              <%= card.try(:hand).try(:name) %>
+            <% end %>
+        </p>
       </div>
     <% end %>
   </div>
