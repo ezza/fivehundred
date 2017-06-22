@@ -99,7 +99,7 @@ class Game < ActiveRecord::Base
   end
 
   def score_game
-    trick_count = bid_winner.won_tricks.size + bid_winner.partner.won_tricks.size
+    trick_count = bid_winner.team_won_tricks
 
     if trick_count >= highest_bid.tricks
       score = highest_bid.score

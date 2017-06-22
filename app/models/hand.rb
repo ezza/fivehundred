@@ -22,6 +22,15 @@ class Hand < ActiveRecord::Base
     game.match.match_users.find_by(user: user)
   end
 
+  def team_bid_string
+    bid = bids.last.to_s
+    bid == "0 Pass" ? partner.bids.last : bid
+  end
+
+  def team_won_tricks_count
+    won_tricks.size + partner.won_tricks.size
+  end
+
   def can_bid?
     game.cards.any? && game.next_bidder_id == id
   end

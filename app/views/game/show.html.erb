@@ -34,6 +34,8 @@
       </div>
     <% end %>
   </div>
+</div>
+<div class="row">
   <div class="col-xs">
     <div class="row-s">
       <div class="box">Last Trick</div>
@@ -52,105 +54,91 @@
       </div>
     <% end %>
   </div>
+</div>
+<div class="row">
   <div class="col-xs">
     <% if current_user.email == 'admin@example.com' %>
       <div class="row-xs">
         <div class="box">
           <% @game.hands.each do |hand| %>
-            <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
-            <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
+            <%= button_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
+            <%= button_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
           <% end %>
         </div>
       </div>
     <% end %>
     <div class="row-xs">
-      <%= link_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
-      <%= link_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
-      <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
-      <%= link_to('Award Game', "/game/#{@game.id}/award_game") if @game.can_award_game? %>
+      <%= button_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
+      <%= button_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
+      <%= button_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
+      <%= button_to('Award Game', "/game/#{@game.id}/award_game") if @game.can_award_game? %>
     </div>
   </div>
 </div>
 <div class="row">
-  <div class="col-xs">
-    &nbsp;
-  </div>
-</div>
-<div class="row">
-  <div class="col-xs">
-
-  </div>
-  <div class="col-xs">
-
-  </div>
-  <div class="col-xs">
-
-  </div>
   <div class="col-xs">
     <div class="row-xs">
-      <div class="box">
-        <strong>Kitty</strong>
-          <%= link_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? && current_user.email == 'admin@example.com'%>
-      </div>
-    </div>
-    <% if @game.bid_winner == current_user || current_user.email == 'admin@example.com' %>
-      <% @game.cards.unassigned.each do |card| %>
-        <div class="row-xs">
-          <div class="box"><%= card %></div>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xs">
-    &nbsp;
-  </div>
-</div>
-<div class="row">
-    <% @game.hands.each do |hand| %>
-    <div class="col-xs">
-      <div class="row-xs">
+      <% @game.hands.each do |hand| %>
         <div class="box">
           <% if hand.user == current_user %><strong><% end %>
-            <%= hand.name %> <%= hand.match_user.try(:score) %>
+          <%= hand.name %> <%= hand.match_user.try(:score) %>
+          - <%= hand.bids.last %>
           <% if hand.user == current_user %></strong><% end %>
         </div>
-      </div>
-      <% if current_user.email == 'admin@example.com' %>
-        <div class="row-xs">
-          <div class="box">
-            <%= link_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
-            <%= link_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
-          </div>
-        </div>
-      <% end %>
-      <div class="row-xs">
-        <% if (hand.user == current_user || current_user.email == 'admin@example.com') && hand.can_bid? && hand.user.present? %>
-          <%= form_tag("/hand/#{hand.id}/make_bid", method: "get") do %>
-            <%= label_tag(:bid, "Bid:") %>
-            <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
-            <%= submit_tag("Place Bid") %>
-          <% end %>
-        <% else %>
-          <div class="box"><strong>Bid: <%= hand.bids.last %></strong></div>
-        <% end %>
-      </div>
-      <div class="row-xs">
-        <div class="box"><strong>Tricks: <%= hand.won_tricks.size %></strong></div>
-      </div>
-      <% if hand.user == current_user || current_user.email == 'admin@example.com' %>
-        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %>
-          <div class="row-xs">
-            <div class="box"><%= card %></div>
-            <% if hand.cards.size > 10 %>
-              <div class="box"><%= link_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %></div>
-            <% else %>
-              <div class="box"><%= link_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %></div>
-            <% end %>
-          </div>
-        <% end %>
       <% end %>
     </div>
-  <% end %>
+  </div>
+  <!--div class="col-xs">
+    <div class="row-xs">
+      <% @game.hands.each do |hand| %>
+          <div class="box">
+            <% if hand.user == current_user %><strong><% end %>
+            <%= hand.bids.last %>
+            <% if hand.user == current_user %></strong><% end %>
+          </div>
+      <% end %>
+    </div>
+  </div-->
+</div>
+<div class="row-xs">
+  &nbsp;
+</div>
+<div class="row">
+  <% hand = @game.hands.find_by(user: current_user) %>
+  <div class="col-xs">
+    <% if current_user.email == 'admin@example.com' %>
+      <div class="row-xs">
+        <div class="box">
+          <%= button_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
+          <%= button_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
+        </div>
+      </div>
+    <% end %>
+    <div class="row-xs">
+      <% if (hand.user == current_user || current_user.email == 'admin@example.com') && hand.can_bid? && hand.user.present? %>
+        <%= form_tag("/hand/#{hand.id}/make_bid") do %>
+          <%= label_tag(:bid, "Bid:") %>
+          <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
+          <%= submit_tag("Place Bid") %>
+        <% end %>
+      <% else %>
+        <div class="box"><strong>Bid: <%= hand.team_bid_string %></strong></div>
+      <% end %>
+    </div>
+    <div class="row-xs">
+      <div class="box"><strong>Tricks: <%= hand.team_won_tricks_count %></strong></div>
+    </div>
+
+    <div class="row-xs">
+      <div class="box">
+        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %><img class="card card-<%= card.rank %>-<%= card.suit %>">
+          <% if hand.cards.size > 10 %>
+            <%= button_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %>
+          <% else %>
+            <%= button_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
