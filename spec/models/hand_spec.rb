@@ -7,9 +7,9 @@ RSpec.describe Hand, type: :model do
   end
 
   def create_card(hand: @hand, rank:, suit:, is_trump: false)
-    card = hand.cards.create(game: @game, rank: rank, suit: suit, is_trump: is_trump)
-    card.set_strength
-    card
+    hand.cards.create(
+      game: @game, rank: rank, suit: suit, is_trump: is_trump
+    ).tap &:set_strength
   end
 
   describe "Suit order" do
