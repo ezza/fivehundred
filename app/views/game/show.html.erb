@@ -1,7 +1,7 @@
 <% if @game.match.games.last != @game %>
-  <meta http-equiv="refresh" content="5; URL=/game/<%= @game.match.games.last.id %>">
-<% elsif current_user.email != 'admin@example.com' && !(@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? )) %>
-  <meta http-equiv="refresh" content="5; URL=/game/<%= @game.id %>">
+  <meta http-equiv="refresh" content="3; URL=/game/<%= @game.match.games.last.id %>">
+<% elsif @game.can_award_game? || (current_user.email != 'admin@example.com' && !(@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? ))) %>
+  <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id %>">
 <% end %>
 
 <div class="row">

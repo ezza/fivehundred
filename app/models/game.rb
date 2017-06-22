@@ -28,6 +28,8 @@ class Game < ActiveRecord::Base
   end
 
   def perform_ai_action
+    return false if can_award_game?
+
     award_trick if can_award_trick?
     award_bid if can_award_bid?
 
