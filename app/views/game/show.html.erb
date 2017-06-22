@@ -20,16 +20,15 @@
       <div class="box">Current Trick</div>
     </div>
     <% @current_trick_cards.each do |card| %>
-
+      <% next unless card %>
       <div class="row-xs">
         <div class="box">
-          <% if card && card.hand == card.trick.leading_hand %><strong><% end %>
-            <%= card %>
-          <% if card %></strong><% end %>
-          <% if card %>
-            (<%= card.try(:hand).try(:name) %>)
-          <% end %>
-          &nbsp;
+          <img class="card card-<%= card.rank %>-<%= card.suit %>">
+          <p>
+            <% if card %>
+              <%= card.try(:hand).try(:name) %>
+            <% end %>
+        </p>
         </div>
       </div>
     <% end %>
