@@ -30,12 +30,18 @@ class GameController < ApplicationController
     @last_trick_cards = @game.last_trick_cards.to_a
     @hands = @game.hands.all.to_a
     
+    loops = 0
     while @hands.first.user != current_user
       @hands.rotate!
+      loops += 1
+      break if loops > 4
     end
 
+    loops = 4
     while @last_trick_cards.first.hand.user != current_user
       @last_trick_cards.rotate!
+      loops += 1
+      break if loops > 4
     end unless @last_trick_cards.empty?
 
     @cards = @hands.map {|h| @game.current_trick_cards.detect { |c| c.hand == h } }
