@@ -3,7 +3,7 @@
     <% @hands.each do |hand| %>
       <p>
         Game <%= hand.game_id %>
-        <%= button_to('resume', { controller: :game, id: hand.game_id, action: :show }) %>
+        <%= button_to('resume', { controller: :game, id: hand.game_id, action: :show }, method: :get) %>
       </p>
     <% end %>
     <% @available_games.each do |game| %>

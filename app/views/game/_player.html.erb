@@ -1,0 +1,10 @@
+<div class="box">
+  <% if card %>
+    <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
+  <% elsif bid && !@game.bidding_complete? %>
+    <span class="card card-<%= bid.tricks %>-<%= bid.suit %>"></span>
+  <% end %>
+    <p>
+      <%= hand.try(:name) %>
+    </p>
+</div>

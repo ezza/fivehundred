@@ -1,141 +1,107 @@
 <% if @game.match.games.last != @game %>
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.match.games.last.id %>">
-<% elsif (current_user.email != 'admin@example.com' && !(@player_hand && ( @player_hand.can_bid? || @player_hand.can_play? ))) && !@game.can_award_game? %>
+<% elsif (current_user.email != 'admin@example.com' && !(@hands.first && ( @hands.first.can_bid? || @hands.first.can_play? ))) && !@game.can_award_game? %>
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id %>">
 <% end %>
 
-<div class="row">
-  <div class="col-xs">
-    <%= link_to('Home', "/") %>
+<div class="space-between" style="position: relative;">
+  <div class="col box">
+    <div><%= @hands[0].name %> + <%= @hands[2].name %></div>
+    <div>Score: <%= @hands[0].match_user.try(:score) %></div>
+    <div>Bid: <%= @hands[0].team_bid_string %></div>
+    <div>Tricks: <%= @hands[0].team_won_tricks_count %></div>
   </div>
-</div>
-<div class="row">
-  <div class="col-xs">
+  <div class="absolute-center">
+    <% if @game.bidding_complete? %>
     <div class="box">Trumps: <strong><%= @game.trump_suit %></strong></div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xs">
-    <div class="row-s">
-      <div class="box">Current Trick</div>
-    </div>
-    <% @current_trick_cards.each do |card| %>
-      <% next unless card %>
-      <div class="row-xs">
-        <div class="box">
-          <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
-          <p>
-            <% if card %>
-              <%= card.try(:hand).try(:name) %>
-            <% end %>
-        </p>
-        </div>
-      </div>
     <% end %>
   </div>
-</div>
-<div class="row">
-  <div class="col-xs">
-    <div class="row-s">
-      <div class="box">Last Trick</div>
-    </div>
-    <% @last_trick_cards.each do |card| %>
-      <div class="row-xs">
-        <div class="box">
-          <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
-          <p>
-            <% if card %>
-              <%= card.try(:hand).try(:name) %>
-            <% end %>
-        </p>
-      </div>
-    <% end %>
+  <div class="col box">
+    <div><%= @hands[1].name %> + <%= @hands[3].name %></div>
+    <div>Score: <%= @hands[1].match_user.try(:score) %></div>
+    <div>Bid: <%= @hands[1].team_bid_string %></div>
+    <div>Tricks: <%= @hands[1].team_won_tricks_count %></div>
   </div>
 </div>
-<div class="row">
-  <div class="col-xs">
-    <% if current_user.email == 'admin@example.com' %>
-      <div class="row-xs">
-        <div class="box">
-          <% @game.hands.each do |hand| %>
-            <%= button_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
-            <%= button_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-    <div class="row-xs">
-      <%= button_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
-      <%= button_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
-      <%= button_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
-      <%= button_to('Award Game', "/game/#{@game.id}/award_game") if @game.can_award_game? %>
+
+<div class="col">
+  <div class="justify-center">
+    <%= render partial: "player", locals: { hand: @hands[2], card: @cards[2], bid: @bids[2] } %>
+  </div>
+  <div class="space-between">
+    <div class="col">
+      <%= render partial: "player", locals: { hand: @hands[1], card: @cards[1], bid: @bids[1] } %>
+    </div>
+    <div class="col">
+      <%= render partial: "player", locals: { hand: @hands[3], card: @cards[3], bid: @bids[3] } %>
     </div>
   </div>
+  <div class="justify-center">
+    <%= render partial: "player", locals: { hand: @hands[0], card: @cards[0], bid: @bids[0] } %>
+  </div>
 </div>
-<div class="row">
-  <div class="col-xs">
-    <div class="row-xs">
-      <% @game.hands.each do |hand| %>
-        <div class="box">
-          <% if hand.user == current_user %><strong><% end %>
-          <%= hand.name %> <%= hand.match_user.try(:score) %>
-          - <%= hand.bids.last %>
-          <% if hand.user == current_user %></strong><% end %>
-        </div>
+
+<div class="justify-center">
+  <% hand = @game.hands.find_by(user: current_user) %>
+    <% if (hand.user == current_user || current_user.email == 'admin@example.com') && hand.can_bid? && hand.user.present? %>
+      <%= form_tag("/hand/#{hand.id}/make_bid") do %>
+        <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
+        <%= submit_tag("Place Bid") %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="row-xs">
+    <div class="box">
+      <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %>
+      <% if @game.bidding_complete? && hand.can_play? && card.can_play? %><br /><% end %>
+        <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
+        <% if hand.cards.size > 10 %>
+          <%= button_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %>
+        <% else %>
+          <%= button_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %>
+        <% end %>
       <% end %>
     </div>
   </div>
-  <!--div class="col-xs">
-    <div class="row-xs">
-      <% @game.hands.each do |hand| %>
-          <div class="box">
-            <% if hand.user == current_user %><strong><% end %>
-            <%= hand.bids.last %>
-            <% if hand.user == current_user %></strong><% end %>
-          </div>
-      <% end %>
-    </div>
-  </div-->
 </div>
-<div class="row-xs">
+
+<div class="">
   &nbsp;
 </div>
-<div class="row">
-  <% hand = @game.hands.find_by(user: current_user) %>
-  <div class="col-xs">
-    <% if current_user.email == 'admin@example.com' %>
-      <div class="row-xs">
-        <div class="box">
-          <%= button_to('Bid', "/hand/#{hand.id}/make_bid") if hand.can_bid? && hand.user.is_ai? %>
-          <%= button_to('Play', "/hand/#{hand.id}/play") if hand.can_play? %>
-        </div>
-      </div>
-    <% end %>
-    <div class="row-xs">
-      <% if (hand.user == current_user || current_user.email == 'admin@example.com') && hand.can_bid? && hand.user.present? %>
-        <%= form_tag("/hand/#{hand.id}/make_bid") do %>
-          <%= label_tag(:bid, "Bid:") %>
-          <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
-          <%= submit_tag("Place Bid") %>
-        <% end %>
-      <% else %>
-        <div class="box"><strong>Bid: <%= hand.team_bid_string %></strong></div>
-      <% end %>
-    </div>
-    <div class="row-xs">
-      <div class="box"><strong>Tricks: <%= hand.team_won_tricks_count %></strong></div>
-    </div>
 
-    <div class="row-xs">
-      <div class="box">
-        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %><span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
-          <% if hand.cards.size > 10 %>
-            <%= button_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %>
-          <% else %>
-            <%= button_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %>
-          <% end %>
-        <% end %>
-      </div>
+<div class="justify-center">
+  <%= button_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
+  <%= button_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
+  <%= button_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
+  <%= button_to('Award Game', "/game/#{@game.id}/award_game") if @game.can_award_game? %>
+</div>
+
+<div class="box">
+  <p>Previous Trick</p>
+</div>
+
+<div class="col">
+  <div class="justify-center">
+    <%= render partial: "player", locals: { hand: @hands[2], card: @last_trick_cards[2], bid: nil } %>
+  </div>
+  <div class="space-between">
+    <div class="col">
+      <%= render partial: "player", locals: { hand: @hands[1], card: @last_trick_cards[1], bid: nil } %>
+    </div>
+    <div class="col">
+      <%= render partial: "player", locals: { hand: @hands[3], card: @last_trick_cards[3], bid: nil } %>
     </div>
   </div>
+  <div class="justify-center">
+    <%= render partial: "player", locals: { hand: @hands[0], card: @last_trick_cards[0], bid: nil } %>
+  </div>
+</div>
+
+<div class="">
+  &nbsp;
+</div>
+
+<div class="justify-center">
+  <%= link_to('Home', "/") %>
 </div>

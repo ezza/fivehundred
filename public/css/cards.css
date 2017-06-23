@@ -1,6 +1,40 @@
+.flex {
+    display: flex;
+}
+
+.box {
+    text-align: center;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.space-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.justify-center {
+    display: flex;
+    justify-content: center;
+}
+
+.absolute-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, -0);
+}
+
+input[type="submit"] {
+    margin-left: 6pt;
+}
+
+
+
 .card {
-  display: block;
-  float: left;
+  display: inline-block;
   height: 66px;
   width:  45px;
 }
@@ -150,4 +184,8 @@
 
 .card-Joker- {
     background: url('/images/cards.png') -775px 210px;
+}
+
+.card-0-Pass {
+    background: url('/images/cards.png') -775px 1px;
 }

@@ -122,6 +122,7 @@ html {
   font-size: 100%; }
 body {
   background-image: url('/images/tablemob.jpg');
+  background-color: #22701C;
   background-size: 100% 100%;
   background-attachment: fixed;
 
