@@ -37,7 +37,7 @@ class GameController < ApplicationController
       break if loops > 4
     end
 
-    loops = 4
+    loops = 0
     while @last_trick_cards.first.hand.user != current_user
       @last_trick_cards.rotate!
       loops += 1
