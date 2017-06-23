@@ -4,7 +4,7 @@
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id %>">
 <% end %>
 
-<div class="space-between" style="position: relative; margin-bottom: 32px;">
+<div class="space-between" style="position: relative;">
   <div class="col box">
     <div><%= @hands[0].name %> + <%= @hands[2].name %></div>
     <div>Score: <%= @hands[0].match_user.try(:score) %></div>
@@ -22,15 +22,15 @@
   </div>
 </div>
 
-<div class="col table">
+<div class="col">
   <div class="justify-center">
     <%= render partial: "player", locals: { hand: @hands[2], card: @cards[2], bid: @bids[2] } %>
   </div>
   <div class="space-between">
-    <div class="col">
+    <div>
       <%= render partial: "player", locals: { hand: @hands[1], card: @cards[1], bid: @bids[1] } %>
     </div>
-    <div class="col">
+    <div>
       <%= render partial: "player", locals: { hand: @hands[3], card: @cards[3], bid: @bids[3] } %>
     </div>
   </div>
@@ -84,10 +84,10 @@
     <%= render partial: "player", locals: { hand: @hands[2], card: @last_trick_cards[2], bid: nil } %>
   </div>
   <div class="space-between">
-    <div class="col">
+    <div>
       <%= render partial: "player", locals: { hand: @hands[1], card: @last_trick_cards[1], bid: nil } %>
     </div>
-    <div class="col">
+    <div>
       <%= render partial: "player", locals: { hand: @hands[3], card: @last_trick_cards[3], bid: nil } %>
     </div>
   </div>
