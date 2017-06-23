@@ -121,7 +121,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 html {
   font-size: 100%; }
 body {
-  background-image: url('/images/tablesml.jpg');
+  background-image: url('/images/tablemob.jpg');
   background-size: 100% 100%;
   background-attachment: fixed;
 
@@ -411,7 +411,11 @@ there.
 @media (min-width: 400px) {}
 
 /* Larger than phablet (also point when grid becomes active) */
-@media (min-width: 550px) {}
+@media (min-width: 550px) {
+  body {
+  background-image: url('/images/tablesml.jpg');
+}
+}
 
 /* Larger than tablet */
 @media (min-width: 750px) {}
