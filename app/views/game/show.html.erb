@@ -4,7 +4,7 @@
   <meta http-equiv="refresh" content="3; URL=/game/<%= @game.id %>">
 <% end %>
 
-<div class="space-between" style="position: relative;">
+<div class="space-between" style="position: relative; margin-bottom: 32px;">
   <div class="col box">
     <div><%= @hands[0].name %> + <%= @hands[2].name %></div>
     <div>Score: <%= @hands[0].match_user.try(:score) %></div>
@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<div class="col">
+<div class="col table">
   <div class="justify-center">
     <%= render partial: "player", locals: { hand: @hands[2], card: @cards[2], bid: @bids[2] } %>
   </div>
