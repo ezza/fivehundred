@@ -76,7 +76,7 @@
   <%= button_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>
   <%= button_to('Award Game', "/game/#{@game.id}/award_game") if @game.can_award_game? %>
 </div>
-
+<% if @game.bidding_complete? %>
 <div class="box">
   <p>Previous Trick</p>
 </div>
@@ -97,7 +97,7 @@
     <%= render partial: "player", locals: { hand: @hands[0], card: @last_trick_cards[0], bid: nil } %>
   </div>
 </div>
-
+<% end %>
 <div class="">
   &nbsp;
 </div>

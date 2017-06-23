@@ -29,15 +29,22 @@ class GameController < ApplicationController
     @current_trick_cards = Array.new(4) { |i| (@game.current_trick_cards || [])[i] }
     @last_trick_cards = @game.last_trick_cards.to_a
     @hands = @game.hands.all.to_a
+    
     while @hands.first.user != current_user
       @hands.rotate!
     end
+
     while @last_trick_cards.first.hand.user != current_user
       @last_trick_cards.rotate!
     end unless @last_trick_cards.empty?
+
     @cards = @hands.map {|h| @game.current_trick_cards.detect { |c| c.hand == h } }
+
     @bids = @game.bids.last(4).to_a
-    Array.new(4) { |i| @bids[i] }
+
+    unless @game.bids.where(hand: @hands.first).any?
+      4 - @bids.count.times {|i| @bids.unshift(nil) }
+    end
   end
 
   def award_bid
