@@ -1,5 +1,6 @@
 .card {
-  outline: none;
+  display: block;
+  float: left;
   height: 66px;
   width:  45px;
 }

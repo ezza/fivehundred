@@ -23,7 +23,7 @@
       <% next unless card %>
       <div class="row-xs">
         <div class="box">
-          <img class="card card-<%= card.rank %>-<%= card.suit %>">
+          <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
           <p>
             <% if card %>
               <%= card.try(:hand).try(:name) %>
@@ -42,7 +42,7 @@
     <% @last_trick_cards.each do |card| %>
       <div class="row-xs">
         <div class="box">
-          <img class="card card-<%= card.rank %>-<%= card.suit %>">
+          <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
           <p>
             <% if card %>
               <%= card.try(:hand).try(:name) %>
@@ -128,7 +128,7 @@
 
     <div class="row-xs">
       <div class="box">
-        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %><img class="card card-<%= card.rank %>-<%= card.suit %>">
+        <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %><span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
           <% if hand.cards.size > 10 %>
             <%= button_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %>
           <% else %>
