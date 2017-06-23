@@ -53,7 +53,7 @@ class Hand < ActiveRecord::Base
     bid = bids.new(suit: strongest, tricks: 6)
     while bid.score <= game.highest_bid.try(:score).to_i
       bid.tricks += 1
-      strength -= 1
+      strength -= 1.25
     end
 
     unless strength > 2
@@ -117,7 +117,7 @@ class Hand < ActiveRecord::Base
       highest_in_game_for_a_suit
     else
       worst_card
-    end.lead
+    end.try(:lead)
   end
 
   def follow(suit = game.tricks.last.suit_lead)
@@ -135,7 +135,7 @@ class Hand < ActiveRecord::Base
       lowest_beater(suit) || lowest_for_suit(suit)
     else
       lowest_for_suit(suit)
-    end.play
+    end.try(:play)
   end
 
   def have_highest_trump_in_game
