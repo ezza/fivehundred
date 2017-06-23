@@ -12,9 +12,7 @@
     <div>Tricks: <%= @hands[0].team_won_tricks_count %></div>
   </div>
   <div class="absolute-center">
-    <% if @game.bidding_complete? %>
-    <div class="box">Trumps: <strong><%= @game.trump_suit %></strong></div>
-    <% end %>
+    
   </div>
   <div class="col box">
     <div><%= @hands[1].name %> + <%= @hands[3].name %></div>
