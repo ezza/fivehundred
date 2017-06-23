@@ -122,6 +122,9 @@ html {
   font-size: 100%; }
 body {
   background-image: url('/images/tablesml.jpg');
+  background-size: 100% 100%;
+  background-attachment: fixed;
+
   padding: 20px;
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
