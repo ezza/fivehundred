@@ -4,8 +4,8 @@ class GameController < ApplicationController
   before_filter :set_game, except: [:index, :create]
 
   def index
-    @available_games = Game.where(started: false).all.reject { |g| g.hands.any?{ |h| h.user == current_user } }
-    @hands = current_user.hands.joins(:game).where("not games.started").all
+    @available_games = Game.where(started: false).order(:id).all.reject { |g| g.hands.any?{ |h| h.user == current_user } }
+    @hands = current_user.hands.joins(:game).where("games.played = 'f'").all
   end
 
   def create
@@ -29,7 +29,7 @@ class GameController < ApplicationController
     @current_trick_cards = Array.new(4) { |i| (@game.current_trick_cards || [])[i] }
     @last_trick_cards = @game.last_trick_cards.to_a
     @hands = @game.hands.all.to_a
-    
+
     loops = 0
     while @hands.first.user != current_user
       @hands.rotate!
