@@ -28,7 +28,7 @@ class GameController < ApplicationController
   def show
     @current_trick_cards = Array.new(4) { |i| (@game.current_trick_cards || [])[i] }
     @last_trick_cards = @game.last_trick_cards.to_a
-    @hands = @game.hands.all.to_a
+    @hands = @game.hands.order(:bid_order).all.to_a
 
     loops = 0
     while @hands.first.user != current_user
