@@ -1,0 +1,9 @@
+<div class="col">
+  <p>
+    Game <%= game.id %>
+  </p>
+  <% game.hands.each do |h| %>
+    <li><%= h.name %></li>
+  <% end %>
+  <%= button_to('Join', { controller: :game, id: game.id, action: :show }, method: :get) %>
+</div>
