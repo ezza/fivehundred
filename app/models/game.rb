@@ -42,25 +42,31 @@ class Game < ActiveRecord::Base
   end
 
   def deal
-    hands.where(user: nil).each_with_index do |hand, i|
-      user = User.where(is_ai: true).offset(i).first
-      hand.update_attributes(user: user)
-      match.users << user
-    end
+    return unless can_deal?
 
-    deck = Deck.cards.shuffle
-
-    hands.each do |hand|
-      10.times do
-        hand.cards.create!(deck.pop.merge(game: self))
+    self.transaction do
+      hands.where(user: nil).each_with_index do |hand, i|
+        user = User.where(is_ai: true).offset(i).first
+        hand.update_attributes(user: user)
+        match.users << user
       end
-    end
 
-    deck.each do |card|
-      self.cards.create!(card)
-    end
+      deck = Deck.cards.shuffle
 
-    update_attributes!(started: true)
+      hands.each do |hand|
+        10.times do
+          hand.cards.create!(deck.pop.merge(game: self))
+        end
+      end
+
+      deck.each do |card|
+        self.cards.create!(card)
+      end
+
+      raise ActiveRecord::Rollback if reload.started?
+
+      update_attributes!(started: true)
+    end
   end
 
   def award_bid
@@ -120,6 +126,8 @@ class Game < ActiveRecord::Base
 
   def award_game
     return unless can_award_game?
+
+    return match.games.last if match.games.last != self
 
     score_game
 
