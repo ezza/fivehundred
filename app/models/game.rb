@@ -127,9 +127,15 @@ class Game < ActiveRecord::Base
   def award_game
     return unless can_award_game?
 
-    return match.games.last if match.games.last != self
+    self.transaction do
+      score_game
 
-    score_game
+      raise ActiveRecord::Rollback if reload.played?
+
+      update_attributes!(played: true)
+    end
+
+    return match.games.last if played?
 
     match.games.create.tap do |game|
       game.hands.each do |hand|
