@@ -15,7 +15,7 @@ class GameController < ApplicationController
   end
 
   def join
-    @game.match.join(current_user)
+    @game.match.join(current_user) unless @game.hands.any? { |h| h.user == current_user }
     redirect_to(@game)
   end
 
