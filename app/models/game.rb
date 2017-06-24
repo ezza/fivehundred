@@ -135,8 +135,6 @@ class Game < ActiveRecord::Base
       update_attributes!(played: true)
     end
 
-    return match.games.last if played?
-
     match.games.create.tap do |game|
       game.hands.each do |hand|
         hand.update_attributes(user: hands.find_by(bid_order: (hand.bid_order + 1) % 4).user)
