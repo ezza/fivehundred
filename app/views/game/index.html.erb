@@ -1,23 +1,17 @@
 <% if user_signed_in? %>
   <p>Hi <%= current_user.email %>
+  <p>
+    <%= button_to('New Game', 'create_game') %>
+  </p>
     <% @hands.each do |hand| %>
-      <p>
-        Game <%= hand.game_id %>
-        <%= button_to('resume', { controller: :game, id: hand.game_id, action: :show }, method: :get) %>
-      </p>
+      <%= render partial: "game", locals: { game: hand.game } %>
     <% end %>
     <% @available_games.each do |game| %>
-      <p>
-        Game <%= game.id %>
-        <%= button_to('join', { controller: :game, id: game.id, action: :join }) %>
-      </p>
+      <%= render partial: "game", locals: { game: game } %>
     <% end %>
-  <li>
-    <%= button_to('New Game', 'create_game') %>
-  </li>
-  <li>
+  <p>
   <%= link_to('Logout', destroy_user_session_path, :method => :delete) %>
-  </li>
+  </p>
 <% else %>
   <li>
   <%= link_to('Login', new_user_session_path)  %>
