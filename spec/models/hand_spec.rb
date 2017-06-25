@@ -194,6 +194,7 @@ RSpec.describe Hand, type: :model do
       it "bids 7 with a black hand" do
         @hand_three.cards.create(rank: 'Jack', suit: "Clubs")
         @hand_three.cards.create(rank: 'Ace', suit: "Spades")
+        @hand_three.cards.create(rank: 'Ace', suit: "Diamonds")
         @hand_three.cards.create(rank: 10, suit: "Spades")
         @hand_three.cards.create(rank: 9, suit: "Spades")
         @hand_three.make_bid
@@ -224,6 +225,7 @@ RSpec.describe Hand, type: :model do
         @hand_three.cards.create(rank: 8, suit: "Clubs")
         @hand_three.cards.create(rank: 'Jack', suit: "Clubs")
         @hand_three.cards.create(rank: 'Queen', suit: "Spades")
+        @hand_three.cards.create(rank: 'Ace', suit: "Diamonds")
         @hand_three.cards.create(rank: 10, suit: "Spades")
         @hand_three.cards.create(rank: 9, suit: "Spades")
         @hand_three.make_bid
