@@ -2,7 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Game, type: :model do
   before do
-    @game = Game.create
+    @match = Match.create
+    @match.join User.create(email: 'test@example.com', password: 'testpass')
+    @game = @match.games.first
+
     @game.deal
   end
 
@@ -22,16 +25,16 @@ RSpec.describe Game, type: :model do
 
   describe "award bid" do
     before do
-      @hand = Hand.create(game: @game)
+      @hand = @game.hands.first
       3.times do
         @hand.bids.create(suit: "Pass")
       end
-      @hand.bids.create(suit: 'Hearts')
+      @leading_bid = @hand.bids.create(suit: 'Hearts')
       @game.award_bid
     end
 
     it "assigns the kitty to the winning player" do
-      expect(@game.cards.where(hand: nil).count).to eq 3
+      expect(@game.cards.where(hand: @leading_bid.hand).count).to eq 13
     end
 
     it "sets the trump suit to the winning bid" do
