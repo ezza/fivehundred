@@ -10,4 +10,4 @@ http://fivehundreds.herokuapp.com/
 - AI bids over its partner when it doesn't need to to win the trick
 - AI leads trumps after it knows only it and it's partner have trumps left
 - Websockets!
-
+- Running specs currently requires db seeds to be loaded in test env
