@@ -19,7 +19,9 @@ module Ai
     end
 
     def have_highest_card_for_trick?(suit)
+      # We have the highest unplayed card for the suit
       highest_for_suit(suit).highest_in_suit? &&
+      # And it's higher than any card played so far this trick
       winning_card_strength < highest_for_suit(suit).strength
     end
 
