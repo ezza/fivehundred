@@ -1,22 +1,5 @@
 module Ai
   module Base
-    def ai_bid
-      strongest = strongest_suit
-      strength = strength(strongest_suit)
-
-      bid = bids.new(suit: strongest, tricks: 6)
-      while bid.score <= game.highest_bid.try(:score).to_i
-        bid.tricks += 1
-        strength -= 1.25
-      end
-
-      unless strength > 2
-        bid.suit, bid.tricks = 'Pass', 0
-      end
-
-      bid
-    end
-
     def choose_kitty
       cards.by_strength.last(3).each do |card|
         card.update_attributes!(hand: nil)
