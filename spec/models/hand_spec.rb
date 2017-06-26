@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Hand, type: :model do
   before do
     @game = Game.create
-    @hand = @game.hands.create(bid_order: 1)
+    @hand = @game.hands.find_by(bid_order: 0)
   end
 
   def create_card(hand: @hand, rank:, suit:, is_trump: false)
@@ -109,7 +109,7 @@ RSpec.describe Hand, type: :model do
 
   describe "following a bid of 6 hearts" do
     before do
-      @hand_two = @game.hands.create!(bid_order: 2)
+      @hand_two = @game.hands.find_by(bid_order: 1)
       @hand_two.bids.create(suit: 'Hearts', tricks: 6)
     end
 
@@ -163,7 +163,7 @@ RSpec.describe Hand, type: :model do
 
     describe "following a bid of 7 hearts" do
       before do
-        @hand_two = @game.hands.create!(bid_order: 2)
+        @hand_two = @game.hands.find_by(bid_order: 1)
         @hand_two.bids.create(suit: 'Hearts', tricks: 7)
       end
 
@@ -186,9 +186,7 @@ RSpec.describe Hand, type: :model do
     describe "with a partner bid of 6 clubs" do
       before do
         @hand.bids.create(suit: 'Clubs', tricks: 6)
-        @hand_two = @game.hands.create!(bid_order: 2)
-        @hand_two.bids.create(suit: 'Hearts', tricks: 6)
-        @hand_three = @game.hands.create!(bid_order: 3)
+        @hand_three = @game.hands.find_by(bid_order: 2)
       end
 
       it "bids 7 with a black hand" do
@@ -274,7 +272,7 @@ RSpec.describe Hand, type: :model do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
 
-      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Jack", suit: "Diamonds", is_trump: true)
+      @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Jack", suit: "Diamonds", is_trump: true)
 
       @s4  = create_card(rank: "4", suit: "Spades")
       @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
@@ -308,8 +306,8 @@ RSpec.describe Hand, type: :model do
     end
 
     it "leads the shortest suit if it has no winners" do
-      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Ace", suit: "Spades")
-      @game.cards.create!(hand: @game.hands.create!(bid_order: 2), rank: "Ace", suit: "Clubs")
+      @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Ace", suit: "Spades")
+      @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Ace", suit: "Clubs")
 
       @h8.update_attributes(suit: "Clubs", is_trump: false)
       @ca.update_attributes(rank: "Queen")
@@ -324,9 +322,9 @@ RSpec.describe Hand, type: :model do
   describe "following" do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
-      @hand_two = @game.hands.create!(bid_order: 2)
-      @hand_three = @game.hands.create!(bid_order: 3)
-      @hand_four = @game.hands.create!(bid_order: 4)
+      @hand_two = @game.hands.find_by(bid_order: 1)
+      @hand_three = @game.hands.find_by(bid_order: 2)
+      @hand_four = @game.hands.find_by(bid_order: 3)
 
       @game.cards.create!(hand: @hand_two, rank: "Jack", suit: "Diamonds", is_trump: true)
 
