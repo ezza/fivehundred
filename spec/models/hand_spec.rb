@@ -287,14 +287,14 @@ RSpec.describe Hand, type: :model do
 
       @game.set_card_strength
 
-      @hand.lead
+      @hand.play
       expect(Trick.last.cards_played[0]).to eq(@jk)
     end
 
     it "leads the lowest trump if it does not have the top" do
       @game.set_card_strength
 
-      @hand.lead
+      @hand.play
       expect(Trick.last.cards_played[0]).to eq(@h8)
     end
 
@@ -303,7 +303,7 @@ RSpec.describe Hand, type: :model do
 
       @game.set_card_strength
 
-      @hand.lead
+      @hand.play
       expect(Trick.last.cards_played[0]).to eq(@ca)
     end
 
@@ -316,7 +316,7 @@ RSpec.describe Hand, type: :model do
 
       @game.set_card_strength
 
-      @hand.lead
+      @hand.play
       expect(Trick.last.cards_played[0]).to eq(@s4)
     end
   end
@@ -349,7 +349,7 @@ RSpec.describe Hand, type: :model do
         it "plays the highest card of the suit if it has it" do
           @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
           @da  = create_card(hand: @hand_two, rank: "Ace", suit: "Diamonds")
-          @hand_two.follow
+          @hand_two.play
 
           expect(Trick.last.cards_played.last).to eq(@da)
         end
@@ -357,7 +357,7 @@ RSpec.describe Hand, type: :model do
         it "throws the lowest card if the only winner is a picture card" do
           @d6  = create_card(hand: @hand_two, rank: 6, suit: "Diamonds")
           @dq  = create_card(hand: @hand_two, rank: "Queen", suit: "Diamonds")
-          @hand_two.follow
+          @hand_two.play
 
           expect(Trick.last.cards_played.last).to eq(@d6)
         end
@@ -373,7 +373,7 @@ RSpec.describe Hand, type: :model do
         it "plays the lowest card required to win the trick if the enemy is winning" do
           @d9  = create_card(hand: @hand_three, rank: "9", suit: "Diamonds").tap &:play
 
-          @hand_four.follow
+          @hand_four.play
 
           expect(Trick.last.cards_played.last).to eq(@d10)
         end
@@ -381,7 +381,7 @@ RSpec.describe Hand, type: :model do
         it "throws the lowest card of the suit if the friend is winning the trick" do
           @d9  = create_card(hand: @hand_two, rank: "9", suit: "Diamonds").tap &:play
 
-          @hand_four.follow
+          @hand_four.play
 
           expect(Trick.last.cards_played.last).to eq(@d4)
         end
@@ -389,7 +389,7 @@ RSpec.describe Hand, type: :model do
         it "throws the lowest card of the suit if it can't win" do
           @da  = create_card(hand: @hand_three, rank: "Ace", suit: "Diamonds").tap &:play
 
-          @hand_four.follow
+          @hand_four.play
 
           expect(Trick.last.cards_played.last).to eq(@d4)
         end
@@ -405,13 +405,13 @@ RSpec.describe Hand, type: :model do
         it "plays the joker if it has it" do
           @jk  = create_card(hand: @hand, rank: "Joker", suit: nil, is_trump: true)
 
-          @hand.follow
+          @hand.play
 
           expect(Trick.last.cards_played.last).to eq(@jk)
         end
 
         it "throws the lowest card if it doesn't have the winner" do
-          @hand.follow
+          @hand.play
 
           expect(Trick.last.cards_played.last).to eq(@h8)
         end
@@ -426,7 +426,7 @@ RSpec.describe Hand, type: :model do
       it "plays the highest card of the suit if it has it" do
         @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
         @sa  = create_card(hand: @hand_three, rank: "Ace", suit: "Spades")
-        @hand_three.follow
+        @hand_three.play
 
         expect(Trick.last.cards_played.last).to eq(@sa)
       end
@@ -434,7 +434,7 @@ RSpec.describe Hand, type: :model do
       it "plays the highest card of the suit if it's at least two higher than the lead" do
         @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
         @sj  = create_card(hand: @hand_three, rank: "Jack", suit: "Spades")
-        @hand_three.follow
+        @hand_three.play
 
         expect(Trick.last.cards_played.last).to eq(@sj)
       end
@@ -442,7 +442,7 @@ RSpec.describe Hand, type: :model do
       it "throws the lowest card if its highest card is the queen or king" do
         @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
         @sj  = create_card(hand: @hand_three, rank: "Queen", suit: "Spades")
-        @hand_three.follow
+        @hand_three.play
 
         expect(Trick.last.cards_played.last).to eq(@s6)
       end
@@ -450,7 +450,7 @@ RSpec.describe Hand, type: :model do
       it "throws the lowest card if its highest card is only one higher than the lead" do
         @s6  = create_card(hand: @hand_three, rank: 6, suit: "Spades")
         @sj  = create_card(hand: @hand_three, rank: 10, suit: "Spades")
-        @hand_three.follow
+        @hand_three.play
 
         expect(Trick.last.cards_played.last).to eq(@s6)
       end
@@ -462,14 +462,14 @@ RSpec.describe Hand, type: :model do
 
       it "trumps if it looks like the other team will win" do
         @d8 = create_card(hand: @hand_two, rank: "8", suit: "Diamonds").tap &:lead
-        @hand.follow
+        @hand.play
 
         expect(Trick.last.cards_played.last).to eq(@h8)
       end
 
       it "discards the weakest card if we're winning" do
         @d8 = create_card(hand: @hand_three, rank: "8", suit: "Diamonds").tap &:lead
-        @hand.follow
+        @hand.play
 
         expect(Trick.last.cards_played.last).to eq(@c9)
       end
