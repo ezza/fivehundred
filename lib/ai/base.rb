@@ -138,5 +138,9 @@ module Ai
     def non_trump_ace_count(suit)
       cards.where(rank: 'Ace').where.not(suit: suit).size
     end
+
+    def joker_count
+      cards.where(rank: 'Joker').size
+    end
   end
 end
