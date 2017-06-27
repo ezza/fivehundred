@@ -11,3 +11,16 @@ http://fivehundreds.herokuapp.com/
 - AI leads trumps after it knows only it and it's partner have trumps left
 - Websockets!
 - Running specs currently requires db seeds to be loaded in test env
+
+### Development
+## Server
+- bundle install
+- rake db:create
+- rake db:migrate
+- rake db:seed
+- rails s
+
+## Additionally for tests
+- rake db:test:prepare
+- RAILS_ENV=test rake db:seed
+- rake spec
