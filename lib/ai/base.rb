@@ -29,8 +29,20 @@ module Ai
       game.tricks.last.cards_played.maximum(:strength)
     end
 
+    def first_to_play?
+      bid_order == first_hand.bid_order
+    end
+
+    def second_to_play?
+      [1, -3].include?(bid_order - first_hand.bid_order)
+    end
+
+    def third_to_play?
+      [2, -2].include?(bid_order - first_hand.bid_order)
+    end
+
     def last_to_play?
-      [3, -1].include?(bid_order - game.tricks.last.cards_played.first.hand.bid_order)
+      [3, -1].include?(bid_order - first_hand.bid_order)
     end
 
     def cant_follow_suit?(suit)
@@ -107,6 +119,10 @@ module Ai
 
     def highest_opponent_bid
       game.bids.active.where.not(hand: partner).last
+    end
+
+    def first_hand
+      game.tricks.last.cards_played.first.hand
     end
 
     def partner
