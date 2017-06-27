@@ -45,6 +45,8 @@ module Ai
       # -> play lowest winner if partner not winning
       elsif have_highest_card_for_trick?(suit)
         highest_for_suit(suit)
+      elsif third_to_play? && partner_played_low?
+        highest_for_suit(suit)
       elsif false
         false
       elsif partner_winning?
@@ -80,6 +82,10 @@ module Ai
       trump_count_for(suit, "king").to_f * 0.2 +
       trump_count_for(suit, "queen").to_f * 0.1 +
       non_trump_ace_count(suit) * 0.9
+    end
+
+    def partner_played_low?
+      game.tricks.last.cards_played.find_by(hand: partner).value <= 10
     end
   end
 end
