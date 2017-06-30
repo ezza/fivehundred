@@ -21,6 +21,10 @@ class Card < ActiveRecord::Base
     where(trick: nil).where.not(hand: nil)
   end
 
+  def self.played
+    where.not(trick: nil)
+  end
+
   def self.trump
     where(is_trump: true)
   end

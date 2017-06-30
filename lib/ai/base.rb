@@ -45,6 +45,16 @@ module Ai
       [3, -1].include?(bid_order - first_hand.bid_order)
     end
 
+    def last_with_suit?(suit)
+      # This is cheating - reimplement without cheating
+      previous_trick_cards.for_suit(suit).any? &&
+      game.cards.for_suit(suit).in_play.where(hand: hands_yet_to_play).none?
+    end
+
+    def hands_yet_to_play
+      game.hands.where.not(id: game.tricks.last.cards.map(&:hand_id) << self.id)
+    end
+
     def cant_follow_suit?(suit)
       !for_suit(suit).any?
     end
@@ -59,6 +69,10 @@ module Ai
 
     def no_trumps?
       !cards.trump.in_play.any?
+    end
+
+    def previous_trick_cards
+      game.cards.played.where('trick_id < ?', game.tricks.last.id)
     end
 
     def highest_trump

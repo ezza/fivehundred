@@ -399,7 +399,8 @@ RSpec.describe Hand, type: :model do
 
     describe "a hostile trump lead" do
       before do
-        @dj  = create_card(hand: @hand_four, rank: "Jack", suit: "Hearts", is_trump: true).tap &:lead
+        @hq  = create_card(hand: @hand_four, rank: "Queen", suit: "Hearts", is_trump: true).tap &:lead
+        @hk  = create_card(hand: @hand, rank: "King", suit: "Hearts", is_trump: true)
       end
 
       describe "as the first player of your team" do
@@ -415,6 +416,14 @@ RSpec.describe Hand, type: :model do
           @hand.play
 
           expect(Trick.last.cards_played.last).to eq(@h8)
+        end
+
+        it "plays the lowest winner if the suit has been played and the hostile partner is out of the suit" do
+          @h10.update_attributes(trick_id: -1)
+
+          @hand.play
+
+          expect(Trick.last.cards_played.last).to eq(@hk)
         end
       end
     end

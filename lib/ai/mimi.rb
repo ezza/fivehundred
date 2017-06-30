@@ -34,7 +34,7 @@ module Ai
     def ai_follow(suit = game.tricks.last.suit_lead)
       if cant_follow_suit?(suit)
         play_offsuit(suit)
-      elsif last_to_play?
+      elsif last_to_play? || last_with_suit?(suit)
         play_as_last(suit)
       elsif should_play_high?(suit)
         highest_for_suit(suit)
