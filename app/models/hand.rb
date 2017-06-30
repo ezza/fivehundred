@@ -67,7 +67,7 @@ class Hand < ActiveRecord::Base
       card = ai_play
     end
 
-    if game.pending_trick? && card
+    if game.pending_trick? && card.reload
       card.play
     else
       card.lead
