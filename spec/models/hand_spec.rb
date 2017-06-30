@@ -118,6 +118,7 @@ RSpec.describe Hand, type: :model do
       create_card(rank: 'Ace', suit: "Spades")
       create_card(rank: 10, suit: "Spades")
       create_card(rank: 9, suit: "Spades")
+      create_card(rank: 8, suit: "Spades")
       create_card(rank: 'Ace', suit: "Diamonds")
       @hand.make_bid
 
@@ -148,10 +149,12 @@ RSpec.describe Hand, type: :model do
       create_card(rank: 10, suit: "Hearts")
       create_card(rank: 9, suit: "Hearts")
       create_card(rank: 8, suit: "Hearts")
+      create_card(rank: 7, suit: "Hearts")
       create_card(rank: 'Jack', suit: "Clubs")
       create_card(rank: 'Ace', suit: "Spades")
       create_card(rank: 10, suit: "Spades")
       create_card(rank: 9, suit: "Spades")
+      create_card(rank: 8, suit: "Spades")
       @hand.make_bid
 
       expect(

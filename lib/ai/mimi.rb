@@ -9,7 +9,7 @@ module Ai
       bid = bids.new(suit: strongest, tricks: 6)
       until bid.score > game.highest_bid.try(:score).to_i
         bid.tricks += 1
-        strength -= 1.25
+        strength -= 1.5
       end
 
       unless strength > 2
