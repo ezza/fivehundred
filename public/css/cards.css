@@ -40,12 +40,17 @@ input[type="submit"] {
     margin-left: 6pt;
 }
 
-
+input:checked + label {
+    outline: 3px solid #ff5722;
+}
 
 .card {
   display: inline-block;
   height: 66px;
   width:  45px;
+}
+.card.disabled {
+  opacity: 0.6;
 }
 .card-Ace-Diamonds {
     background: url('/images/cards.png') 0px 1px;

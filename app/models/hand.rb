@@ -67,11 +67,15 @@ class Hand < ActiveRecord::Base
       card = ai_play
     end
 
-    if game.pending_trick?
+    if game.pending_trick? && card
       card.play
     else
       card.lead
-    end
+    end 
+  end
+
+  def can_discard?
+    cards.count > 10
   end
 
   def discard(suit: nil, rank: nil)

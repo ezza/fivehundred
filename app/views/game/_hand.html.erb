@@ -1,0 +1,18 @@
+<div class="box">
+  <% action = hand.can_discard? ? :discard : :play  %>
+  <%= form_tag("/hand/#{hand.id}/#{action}") if (!hand.can_bid? && (hand.can_play? || hand.can_discard?)) %>
+  <%= render partial: "cards/#{action}",
+            locals: {hand: hand},
+            collection: hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC') %>
+</div>
+<div class="box">
+  <% if hand.can_bid? %>
+    <%= form_tag("/hand/#{hand.id}/make_bid") do %>
+      <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
+      <%= submit_tag("Place Bid") %>
+    <% end %>
+  <% elsif hand.can_play? || hand.can_discard? %>
+      <input type="submit" value="<%= action %>" />
+    </form>
+  <% end %>
+</div>

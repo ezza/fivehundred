@@ -39,29 +39,8 @@
   </div>
 </div>
 
-<div class="justify-center">
-  <% hand = @game.hands.find_by(user: current_user) %>
-    <% if (hand.user == current_user || current_user.email == 'admin@example.com') && hand.can_bid? && hand.user.present? %>
-      <%= form_tag("/hand/#{hand.id}/make_bid") do %>
-        <%= select_tag(:bid, options_for_select(@game.available_bids)) %>
-        <%= submit_tag("Place Bid") %>
-      <% end %>
-    <% end %>
-  </div>
-
-  <div class="row-xs">
-    <div class="box">
-      <% hand.cards.in_play_unordered.order('is_trump DESC, suit, strength DESC').each do |card| %>
-      <% if @game.bidding_complete? && hand.can_play? && card.can_play? %><br /><% end %>
-        <span class="card card-<%= card.rank %>-<%= card.suit %>"></span>
-        <% if hand.cards.size > 10 %>
-          <%= button_to('Discard', "/hand/#{hand.id}/discard?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? %>
-        <% else %>
-          <%= button_to('Play', "/hand/#{hand.id}/play?suit=#{card.suit}&rank=#{card.rank}") if hand.can_play? && card.can_play? %>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
+<div class="box">
+  <%= render partial: "hand", locals: { hand: @game.hands.find_by(user: current_user) } %>
 </div>
 
 <div class="">
@@ -69,6 +48,7 @@
 </div>
 
 <div class="justify-center">
+  <!-- Hand button not working -->
   <%= button_to('Deal', "/game/#{@game.id}/deal") if @game.can_deal? %>
   <%= button_to('Award Trick', "/game/#{@game.id}/award_trick") if @game.can_award_trick? %>
   <%= button_to('Award Bid', "/game/#{@game.id}/award_bid") if @game.can_award_bid? %>

@@ -7,13 +7,23 @@ class HandController < ApplicationController
   end
 
   def play
-    hand.play(suit: params[:suit], rank: params[:rank])
+    card = Card.find_by(id: params[:id])
+
+    if card && !card.trick_id?
+      if card.game.pending_trick?
+        card.play
+      else
+        card.lead
+      end
+    end
 
     perform_ai_actions_and_redirect
   end
 
   def discard
-    hand.discard(suit: params[:suit], rank: params[:rank])
+    Card.find(params[:id]).each do |card|
+      card.update_attributes!(hand: nil)
+    end if params[:id].is_a?(Array) && params[:id].length == 3
 
     perform_ai_actions_and_redirect
   end

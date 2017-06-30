@@ -22,7 +22,7 @@ class Game < ActiveRecord::Base
     can_award_trick? ||
     can_award_bid? ||
     hands.detect do |hand|
-      next unless hand.user.is_ai?
+      next unless hand.user.try(:is_ai?)
       hand.can_bid? || hand.can_play?
     end
   end

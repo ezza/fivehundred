@@ -1,0 +1,7 @@
+<% if hand.can_play? && play.can_play? %>
+  <input id="play_card_<%= play.id %>" type="radio" name="id" value="<%= play.id %>" style="display: none;"/>
+<% end %>
+<label
+  for="play_card_<%= play.id %>"
+  class="card card-<%= play.rank %>-<%= play.suit %> <%= 'disabled' unless hand.can_play? && play.can_play? %>"
+></label>
