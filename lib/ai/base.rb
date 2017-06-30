@@ -85,12 +85,6 @@ module Ai
       for_suit(suit).reverse.detect { |card| card.strength > winning_card_strength }
     end
 
-    def lowest_beater(suit)
-      for_suit(suit).where("strength > ?", winning_card_strength.floor + 2)
-        .where("strength < 12")
-        .last
-    end
-
     def for_suit(suit)
       if suit == trump_suit
         cards.trump.in_play

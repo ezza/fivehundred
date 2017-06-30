@@ -32,28 +32,33 @@ module Ai
     end
 
     def ai_follow(suit = game.tricks.last.suit_lead)
-      if cant_follow_suit?(suit) && (cant_trump?(suit) || partner_winning?)
-        worst_card
-      elsif cant_follow_suit?(suit)
-        lowest_trump
-      elsif partner_winning? && last_to_play?
-        lowest_for_suit(suit)
+      if cant_follow_suit?(suit)
+        play_offsuit(suit)
       elsif last_to_play?
-        lowest_winner(suit) || lowest_for_suit(suit)
-      # don't play highest if the last player is out of the suit
-      # -> play lowest if partner winning
-      # -> play lowest winner if partner not winning
-      elsif have_highest_card_for_trick?(suit)
+        play_as_last(suit)
+      elsif should_play_high?(suit)
         highest_for_suit(suit)
-      elsif third_to_play? && partner_played_low?
-        highest_for_suit(suit)
-      elsif false
-        false
-      elsif partner_winning?
-        lowest_beater(suit) || lowest_for_suit(suit)
       else
         lowest_for_suit(suit)
       end
+    end
+
+    def should_play_high?(suit)
+      have_highest_card_for_trick?(suit) ||
+      (third_to_play? && partner_played_low?)
+    end
+
+    def play_offsuit(suit)
+      if partner_winning? || cant_trump?(suit)
+        worst_card
+      else
+        lowest_trump
+      end
+    end
+
+    def play_as_last(suit)
+      winner = lowest_winner(suit) if !partner_winning?
+      winner || lowest_for_suit(suit)
     end
 
     def strongest_suit
