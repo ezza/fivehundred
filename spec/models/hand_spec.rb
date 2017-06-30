@@ -472,6 +472,8 @@ RSpec.describe Hand, type: :model do
 
     describe "when you can't follow suit" do
       before do
+        @h10  = create_card(rank: 10, suit: "Hearts", is_trump: true)
+        @h10.update_attributes(trick_id: -1)
       end
 
       it "trumps if it looks like the other team will win" do

@@ -56,7 +56,7 @@ module Ai
     end
 
     def cant_follow_suit?(suit)
-      !for_suit(suit).any?
+      !for_suit(suit).in_play.any?
     end
 
     def cant_trump?(suit)
