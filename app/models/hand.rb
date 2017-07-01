@@ -67,11 +67,11 @@ class Hand < ActiveRecord::Base
       card = ai_play
     end
 
-    if game.pending_trick? && card.reload
+    if game.pending_trick?
       card.play
     else
       card.lead
-    end 
+    end if card
   end
 
   def can_discard?
