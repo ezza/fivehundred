@@ -123,7 +123,9 @@ module Ai
     end
 
     def worst_card
-      cards.non_trump.in_play.where(suit: shortest_suit).last || cards.in_play.last
+      cards.non_trump.in_play.where(suit: shortest_suit).reverse.detect{ |c| c.value <= 10 } ||
+      cards.non_trump.in_play.last ||
+      cards.in_play.last
     end
 
     def highest_partner_bid
