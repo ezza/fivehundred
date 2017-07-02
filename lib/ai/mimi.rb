@@ -44,8 +44,9 @@ module Ai
     end
 
     def should_play_high?(suit)
-      have_highest_card_for_trick?(suit) ||
-      (third_to_play? && partner_played_low?)
+      # !partner winning and some other stuff
+      !partner_should_win_trick?(suit) &&
+      partner_played_low? || have_highest_card_for_trick?(suit)
     end
 
     def play_offsuit(suit)
@@ -57,7 +58,7 @@ module Ai
     end
 
     def play_as_last(suit)
-      winner = lowest_winner(suit) if !partner_winning?
+      winner = lowest_winner(suit) if !partner_should_win_trick?(suit)
       winner || lowest_for_suit(suit)
     end
 
@@ -90,7 +91,13 @@ module Ai
     end
 
     def partner_played_low?
-      game.tricks.last.cards_played.find_by(hand: partner).value <= 10
+      partner_card = game.tricks.last.cards_played.find_by(hand: partner)
+      partner_card && partner_card.value <= 10
+    end
+
+    def partner_should_win_trick?(suit)
+      partner_winning? &&
+      potential_cards_to_be_played(suit).where("strength > ?", winning_card_strength).none?
     end
   end
 end

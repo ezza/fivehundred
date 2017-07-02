@@ -46,9 +46,14 @@ module Ai
     end
 
     def last_with_suit?(suit)
-      # This is cheating - reimplement without cheating
+      # Dont let the AI know unless the suit has been played
       previous_trick_cards.for_suit(suit).any? &&
-      game.cards.for_suit(suit).in_play.where(hand: hands_yet_to_play).none?
+      potential_cards_to_be_played(suit).none?
+    end
+
+    def potential_cards_to_be_played(suit)
+      # This is cheating - reimplement without cheating
+      game.cards.for_suit(suit).in_play.where(hand: hands_yet_to_play)
     end
 
     def hands_yet_to_play
