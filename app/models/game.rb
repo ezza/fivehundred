@@ -127,6 +127,8 @@ class Game < ActiveRecord::Base
   def award_game
     return unless can_award_game?
 
+    return match.games.last if played
+
     self.transaction do
       score_game
 
