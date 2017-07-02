@@ -95,7 +95,6 @@ module Ai
     def lowest_trump
       cards.trump.in_play.last
     end
-
     def lowest_for_suit(suit)
       for_suit(suit).in_play.last
     end

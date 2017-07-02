@@ -53,7 +53,7 @@ module Ai
       if partner_winning? || cant_trump?(suit)
         worst_card
       else
-        lowest_trump
+        lowest_winner(trump_suit) || worst_card
       end
     end
 
