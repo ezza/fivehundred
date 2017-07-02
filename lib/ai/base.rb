@@ -1,10 +1,5 @@
 module Ai
   module Base
-    def choose_kitty
-      cards.by_strength.last(3).each do |card|
-        card.update_attributes!(hand: nil)
-      end
-    end
 
     def ai_play
       if game.pending_trick?
@@ -116,15 +111,13 @@ module Ai
     end
 
     def shortest_suit
-      cards.non_trump.in_play.pluck(:suit).uniq.sort_by do |suit|
-        [for_suit(suit).size, for_suit(suit).maximum(:strength)]
-      end.first
+      suits_by_card_count.first
     end
 
-    def worst_card
-      cards.non_trump.in_play.where(suit: shortest_suit).reverse.detect{ |c| c.value <= 10 } ||
-      cards.non_trump.in_play.last ||
-      cards.in_play.last
+    def suits_by_card_count
+      cards.non_trump.in_play.pluck(:suit).uniq.sort_by do |suit|
+        [for_suit(suit).size, for_suit(suit).maximum(:strength)]
+      end
     end
 
     def highest_partner_bid

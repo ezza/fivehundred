@@ -19,6 +19,10 @@ module Ai
       bid
     end
 
+    def choose_kitty
+      3.times { |i| worst_card.update_attributes!(hand: nil) }
+    end
+
     def ai_lead
       if have_highest_trump_in_game
         highest_trump
@@ -98,6 +102,22 @@ module Ai
     def partner_should_win_trick?(suit)
       partner_winning? &&
       potential_cards_to_be_played(suit).where("strength > ?", winning_card_strength).none?
+    end
+
+    def most_throwable_suit
+      suits_by_card_count.detect do |suit|
+        for_suit(suit).size + for_suit(suit).maximum(:strength) < 14
+      end || suits_by_card_count.detect do |suit|
+        for_suit(suit).size + for_suit(suit).maximum(:strength) < 15
+      end
+    end
+
+    def worst_card
+      if most_throwable_suit
+        cards.in_play.where(suit: most_throwable_suit).last
+      else
+        cards.in_play.last
+      end
     end
   end
 end

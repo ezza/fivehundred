@@ -250,8 +250,6 @@ RSpec.describe Hand, type: :model do
 
     it "discards the lowest three cards" do
       @game.update_attributes(trump_suit: 'Diamonds')
-      @hand.cards.where(suit: "Hearts").update_all(is_trump: true)
-
       @game.set_card_strength
 
       @hand.reload.choose_kitty
@@ -262,12 +260,34 @@ RSpec.describe Hand, type: :model do
     it "does not discard trumps" do
       @game.update_attributes(trump_suit: 'Spades')
       @hand.cards.where(suit: "Spades").update_all(is_trump: true)
-
       @game.set_card_strength
 
       @hand.reload.choose_kitty
 
       expect(@hand.cards.reload).to eq([@s6])
+    end
+
+    it "does not discard the cover card for a king" do
+      @sk = create_card(rank: 'King', suit: "Spades")
+
+      @game.update_attributes(trump_suit: 'Diamonds')
+      @game.set_card_strength
+
+      @hand.reload.choose_kitty
+
+      expect(@hand.cards.reload).to eq([@s6, @sk])
+    end
+
+    it "discards a six an a jack before a singleton King" do
+      @ck = create_card(rank: 'King', suit: "Clubs")
+      @sj = create_card(rank: 'Jack', suit: "Spades")
+
+      @game.update_attributes(trump_suit: 'Diamonds')
+      @game.set_card_strength
+
+      @hand.reload.choose_kitty
+
+      expect(@hand.cards.reload).to eq([@h10, @h9, @ck])
     end
   end
 
