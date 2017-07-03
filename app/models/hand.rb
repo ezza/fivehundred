@@ -51,7 +51,7 @@ class Hand < ActiveRecord::Base
   def can_play?
     false unless game.bid_winner
 
-    if game.tricks.count == 0
+    if !game.tricks.last
       game.bid_winner == self
     elsif !game.pending_trick?
       game.tricks.last.trick_winner == self
