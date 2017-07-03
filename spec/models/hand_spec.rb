@@ -298,7 +298,7 @@ RSpec.describe Hand, type: :model do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
 
-      @jd = @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Jack", suit: "Diamonds", is_trump: true)
+      @jh = @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Jack", suit: "Hearts", is_trump: true)
 
       @s4  = create_card(rank: "4", suit: "Spades")
       @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
@@ -341,11 +341,11 @@ RSpec.describe Hand, type: :model do
     it "leads offsuit when both opponents are out of trumps" do
       @jk = create_card(rank: "Joker", suit: nil, is_trump: true)
 
-      create_card(hand: @hand_three, rank: "King", suit: "Hearts", is_trump: true).tap &:lead
+      @jh.tap{ |c| c.update_attributes(hand: @hand_three) }.tap &:lead
       create_card(hand: @hand_four, rank: "King", suit: "Clubs").tap &:play
       create_card(hand: @hand, rank: "Ace", suit: "Hearts", is_trump: true).tap &:play
 
-      @jd.destroy
+      #@jh.destroy
 
       create_card(hand: @hand_two, rank: 5, suit: "Spades").tap &:play
       @game.reload.award_trick

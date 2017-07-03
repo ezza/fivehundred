@@ -73,7 +73,7 @@ module Ai
 
     def tricks_where_trumps_led
       game.tricks.select { |t|
-        t.cards.first.suit == trump_suit
+        t.cards.first.is_trump?
       }
     end
 
