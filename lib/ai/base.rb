@@ -71,6 +71,12 @@ module Ai
       !cards.trump.in_play.any?
     end
 
+    def tricks_where_trumps_led
+      game.tricks.select { |t|
+        t.cards.first.suit == trump_suit
+      }
+    end
+
     def previous_trick_cards
       game.cards.played.where('trick_id < ?', game.tricks.last.id)
     end

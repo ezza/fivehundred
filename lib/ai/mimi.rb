@@ -24,9 +24,9 @@ module Ai
     end
 
     def ai_lead
-      if have_highest_trump_in_game
+      if have_highest_trump_in_game && number_of_opponents_with_potential_trumps > 0
         highest_trump
-      elsif trump_count > 1
+      elsif trump_count > 1 && number_of_opponents_with_potential_trumps > 1
         cards.trump.in_play.last
       elsif highest_in_game_for_a_suit
         highest_in_game_for_a_suit
@@ -102,6 +102,14 @@ module Ai
     def partner_should_win_trick?(suit)
       partner_winning? &&
       potential_cards_to_be_played(suit).where("strength > ?", winning_card_strength).none?
+    end
+
+    def number_of_opponents_with_potential_trumps
+      return 2 unless tricks_where_trumps_led.any?
+
+      2 - (tricks_where_trumps_led.map { |t|
+        t.cards.where(is_trump: false).map(&:hand)
+      }.flatten.uniq - [self, partner]).count
     end
 
     def most_throwable_suit

@@ -4,6 +4,9 @@ RSpec.describe Hand, type: :model do
   before do
     @game = Game.create
     @hand = @game.hands.find_by(bid_order: 0)
+    @hand_two = @game.hands.find_by(bid_order: 1)
+    @hand_three = @game.hands.find_by(bid_order: 2)
+    @hand_four = @game.hands.find_by(bid_order: 3)
   end
 
   def create_card(hand: @hand, rank:, suit:, is_trump: false)
@@ -295,7 +298,7 @@ RSpec.describe Hand, type: :model do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
 
-      @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Jack", suit: "Diamonds", is_trump: true)
+      @jd = @game.cards.create!(hand: @game.hands.find_by(bid_order: 1), rank: "Jack", suit: "Diamonds", is_trump: true)
 
       @s4  = create_card(rank: "4", suit: "Spades")
       @h9  = create_card(rank: 10, suit: "Hearts", is_trump: true)
@@ -317,6 +320,57 @@ RSpec.describe Hand, type: :model do
 
       @hand.play
       expect(Trick.last.cards_played[0]).to eq(@h8)
+    end
+
+    it "plays trumps when when one opponent is out of trumps and we will win" do
+      @jk = create_card(rank: "Joker", suit: nil, is_trump: true)
+
+      create_card(hand: @hand_three, rank: "King", suit: "Hearts", is_trump: true).tap &:lead
+      create_card(hand: @hand_four, rank: "King", suit: "Clubs").tap &:play
+      create_card(hand: @hand, rank: "Ace", suit: "Hearts", is_trump: true).tap &:play
+      create_card(hand: @hand_two, rank: 5, suit: "Hearts", is_trump: true).tap &:play
+      @game.award_trick
+
+      @game.set_card_strength
+
+      @hand.play
+
+      expect(Trick.last.cards_played[0]).to eq(@jk)
+    end
+
+    it "leads offsuit when both opponents are out of trumps" do
+      @jk = create_card(rank: "Joker", suit: nil, is_trump: true)
+
+      create_card(hand: @hand_three, rank: "King", suit: "Hearts", is_trump: true).tap &:lead
+      create_card(hand: @hand_four, rank: "King", suit: "Clubs").tap &:play
+      create_card(hand: @hand, rank: "Ace", suit: "Hearts", is_trump: true).tap &:play
+
+      @jd.destroy
+
+      create_card(hand: @hand_two, rank: 5, suit: "Spades").tap &:play
+      @game.reload.award_trick
+
+      @game.reload.set_card_strength
+
+      # I don't know why but the hand isn't leading a trick here, it's not triggering the debug statement in ai_lead
+
+      @hand.play
+
+      expect(Trick.last.cards_played[0]).to eq(@ca)
+    end
+
+    it "leads offsuit when one opponent is out of trumps and they have the winner" do
+      create_card(hand: @hand_three, rank: "King", suit: "Hearts", is_trump: true).tap &:lead
+      create_card(hand: @hand_four, rank: "King", suit: "Clubs").tap &:play
+      create_card(hand: @hand, rank: "Ace", suit: "Hearts", is_trump: true).tap &:play
+      create_card(hand: @hand_two, rank: 5, suit: "Hearts", is_trump: true).tap &:play
+      @game.award_trick
+
+      @game.set_card_strength
+
+      @hand.play
+
+      expect(Trick.last.cards_played[0]).to eq(@ca)
     end
 
     it "leads the highest of an offsuit if it has one" do
@@ -345,9 +399,6 @@ RSpec.describe Hand, type: :model do
   describe "following" do
     before do
       @game.update_attributes(trump_suit: 'Hearts')
-      @hand_two = @game.hands.find_by(bid_order: 1)
-      @hand_three = @game.hands.find_by(bid_order: 2)
-      @hand_four = @game.hands.find_by(bid_order: 3)
 
       @game.cards.create!(hand: @hand_two, rank: "Jack", suit: "Diamonds", is_trump: true)
 

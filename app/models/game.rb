@@ -178,7 +178,7 @@ class Game < ActiveRecord::Base
   end
 
   def pending_trick?
-    tricks.last && !tricks.last.try(:won_by_hand_id) #&& tricks.last.cards_played.size < 4
+    tricks.last && !tricks.last.try(:won_by_hand_id)
   end
 
   def set_card_strength

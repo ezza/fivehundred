@@ -13,7 +13,6 @@ http://fivehundreds.herokuapp.com/
 - Running specs currently requires db seeds to be loaded in test env
 - show each bid even if the player passes
 - show what was in kitty afterwards
-- if you're trumping, make sure you trump higher than any existing trumps
 
 ### Development
 ## Server
