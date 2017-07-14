@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   # Example resource route (maps HTTP verbs to controller actions automatically):
 
   post 'create_game' => 'game#create'
+  get 'game/:id/join' => 'game#join'
   post 'game/:id/join' => 'game#join'
   post 'game/:id/deal' => 'game#deal'
   post 'game/:id/award_bid' => 'game#award_bid'
