@@ -501,6 +501,33 @@ RSpec.describe Hand, type: :model do
 
     describe "a friendly lead" do
 
+      describe "in trumps" do
+
+        it "plays high to a low lead" do
+          @h4 = create_card(hand: @hand, rank: 4, suit: "Hearts", is_trump: true).tap &:lead
+          
+          @hk = create_card(hand: @hand_two, is_trump: true, rank: "King", suit: "Hearts").tap &:play
+
+          @h7  = create_card(hand: @hand_three, is_trump: true, rank: 7, suit: "Hearts")
+          @hj  = create_card(hand: @hand_three, is_trump: true, rank: "Jack", suit: "Hearts")
+          @hand_three.play
+
+          expect(Trick.last.cards_played.last).to eq(@hj)
+        end
+
+        it "throws low if it can't beat the opponent" do
+          @h4 = create_card(hand: @hand, rank: 4, suit: "Hearts", is_trump: true).tap &:lead
+
+          @jk = create_card(hand: @hand_two, is_trump: true, rank: "Joker", suit: nil).tap &:play
+
+          @h7  = create_card(hand: @hand_three, is_trump: true, rank: 7, suit: "Hearts")
+          @hj  = create_card(hand: @hand_three, is_trump: true, rank: "Jack", suit: "Hearts")
+          @hand_three.play
+
+          expect(Trick.last.cards_played.last).to eq(@h7)
+        end
+      end
+
       it "plays the highest card of the suit if it has it" do
         @s8 = create_card(hand: @hand, rank: "9", suit: "Spades").tap &:lead
 
@@ -531,7 +558,6 @@ RSpec.describe Hand, type: :model do
 
         expect(Trick.last.cards_played.last).to eq(@s7)
       end
-
 
       it "throws the lowest card if its highest card is only one higher than the lead" do
         @s8 = create_card(hand: @hand, rank: "9", suit: "Spades").tap &:lead

@@ -48,8 +48,8 @@ module Ai
     end
 
     def should_play_high?(suit)
-      # !partner winning and some other stuff
       !partner_should_win_trick?(suit) &&
+      lowest_winner(suit) &&
       partner_played_low? || have_highest_card_for_trick?(suit)
     end
 
