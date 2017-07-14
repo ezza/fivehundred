@@ -72,8 +72,8 @@ module Ai
     end
 
     def tricks_where_trumps_led
-      game.tricks.select { |t|
-        t.cards.first.is_trump?
+      game.tricks.select { |trick|
+        trick.card_lead.is_trump?
       }
     end
 

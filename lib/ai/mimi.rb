@@ -107,8 +107,8 @@ module Ai
     def number_of_opponents_with_potential_trumps
       return 2 unless tricks_where_trumps_led.any?
 
-      2 - (tricks_where_trumps_led.map { |t|
-        t.cards.where(is_trump: false).map(&:hand)
+      2 - (tricks_where_trumps_led.map { |trick|
+        trick.cards.where(is_trump: false).map(&:hand)
       }.flatten.uniq - [self, partner]).count
     end
 
